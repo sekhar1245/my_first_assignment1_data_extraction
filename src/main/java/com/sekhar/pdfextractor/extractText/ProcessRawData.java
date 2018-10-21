@@ -26,73 +26,31 @@ import com.sekhar.pdfextractor.beans.Voter;
 
 public class ProcessRawData {
 
-	public static void removeHeaderAndTrailerFromRawFile(String rawFilePath) {
+	public Set<Voter> removeHeaderAndTrailerFromRawFile(String rawFilePath) {
 
+		Set<Voter> voterBeanSet = new HashSet<Voter>();
 		try {
 			List<String> allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
 			allLines.remove(allLines.size() - 2);
 			allLines.remove(1);
 			allLines.remove(0);
-
-			// List<String> voterList = getVoterIDList(allLines.get(0));
-			System.out.println("Voter ID" + allLines.get(0));
-
-			// System.out.println("cleaned Voter ID" + voterList);
-
-			System.out.println("==================");
-			System.out.println("Name-->" + allLines.get(1));
-			// Map<String, String> namesListMap = getNamesListMap(allLines.get(1));
-			// System.out.println("cleaned Names List " + namesListMap.keySet());
-
-			/*
-			 * System.out.println("==================");
-			 * System.out.println("Husband//Father Name" + allLines.get(2));
-			 * 
-			 * Map<String, String> namesListMap =
-			 * getHusbandAndFatherListMap(allLines.get(2));
-			 * System.out.println("cleaned Names List " +
-			 * namesListMap.keySet()+"--->"+namesListMap.values()); Map<String, String>
-			 * namesListMap1 = getHusbandAndFatherListMap(allLines.get(7));
-			 * System.out.println("cleaned Names List " +
-			 * namesListMap1.keySet()+"-->"+namesListMap1.values());
-			 * 
-			 * 
-			 * Map<String, String> namesListMap2 =
-			 * getHusbandAndFatherListMap(allLines.get(12));
-			 * 
-			 * System.out.println("cleaned Names List " +
-			 * namesListMap2.keySet()+namesListMap2.values());
-			 * 
-			 */
-
-			System.out.println("House No" + allLines.get(3));
-			Map<String, String> houseNumberMap = getHouseNumbersMap(allLines.get(3));
-			System.out.println("House No" + houseNumberMap.keySet() + "====" + houseNumberMap.values());
-
-			System.out.println("Age and Gender " + allLines.get(4));
 			
-			Map<LinkedList,LinkedList> ageGenderMap = getAgeGenderMap(allLines.get(4));
+			for(int i=0;i<allLines.size();i++) {
+				
+				Set<Voter> voterSet = cleanseRawData(allLines.get(i),allLines.get(i+1),allLines.get(i+2),allLines.get(i+3),allLines.get(i+4));
+				voterBeanSet.addAll(voterSet);
+			}
 			
-			Set age = ageGenderMap.keySet();
-			List gender = (List) ageGenderMap.values();
-			System.out.println("age is "+age);
-			System.out.println("gender is "+gender);
 			
-			/*
-			 ** * *  * System.out.println("Voter ID" + allLines.get(5));
-			 * System.out.println("Voter ID" + allLines.get(10));
-			 * System.out.println("Voter ID" + allLines.get(15));
-			 * System.out.println("Voter ID" + allLines.get(20));
-			 */
-
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		return voterBeanSet;
 	}
 
-	public Set<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
+	public static Set<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
 			String houseNumberLine, String ageAndGenderLine) {
 
 		Set<Voter> VoterSet = new HashSet<Voter>();
@@ -100,12 +58,49 @@ public class ProcessRawData {
 		Voter firstVoter = new Voter();
 		Voter secondvoter = new Voter();
 		Voter thirdVoter = new Voter();
-
+		
+		//Setting VoterIDs
 		List<String> voterList = getVoterIDList(voterIDLine);
 		firstVoter.setVoterID(voterList.get(0));
 		secondvoter.setVoterID(voterList.get(1));
 		thirdVoter.setVoterID(voterList.get(2));
-
+		
+		//Setting Names
+		
+		Map<String, String> namesListMap = getNamesListMap(nameLine);
+		List<String> List = new ArrayList<String>(namesListMap.keySet());
+		
+		firstVoter.setUserName(List.get(0));
+		secondvoter.setUserName(List.get(1));
+		thirdVoter.setUserName(List.get(2));
+		
+		List.clear();
+		
+		
+		//House Number
+		Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
+		List.addAll(houseNumberListMap1.keySet());
+		firstVoter.setHouseNumber(List.get(0));
+		secondvoter.setHouseNumber(List.get(1));
+		thirdVoter.setHouseNumber(List.get(2));
+		List.clear();
+		
+		//Setting Age
+		Map<Integer,List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
+		List.addAll(ageGenderMap.get(0));
+		firstVoter.setAge(List.get(0));
+		secondvoter.setAge(List.get(1));
+		thirdVoter.setAge(List.get(2));
+		List.clear();
+		
+		//Setting Gender
+		List.addAll(ageGenderMap.get(1));
+		firstVoter.setGender(List.get(0));
+		secondvoter.setGender(List.get(1));
+		thirdVoter.setGender(List.get(2));
+		List.clear();
+		
+		
 		return VoterSet;
 
 	}
@@ -142,7 +137,7 @@ public class ProcessRawData {
 		boolean b = m.find();
 		System.out.println("there is one delted Voter" + b);
 
-		namesLine = namesLine.replaceAll("Name", "").trim();
+		namesLine = namesLine.replaceAll("Name", "").replaceAll("Photo is","").trim();
 
 		List<String> namesList = new ArrayList<String>();
 
@@ -193,7 +188,7 @@ public class ProcessRawData {
 				.trim();
 		System.out.println("Processing--->" + houseNumberLine);
 
-		List<Integer> indexList = sortHouseNUmberIndex(houseNumberLine);
+		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
 
 		System.out.println("Processing=======>" + indexList);
 
@@ -223,7 +218,7 @@ public class ProcessRawData {
 
 	}
 
-	private static List<Integer> sortHouseNUmberIndex(String husbandAndFatherLine) {
+	private static List<Integer> sortHouseNumberIndex(String husbandAndFatherLine) {
 
 		int[] validHouseIndex = patternMatchingString(husbandAndFatherLine, "454");
 		int[] inValidHouseIndex = patternMatchingString(husbandAndFatherLine, "545");
@@ -384,29 +379,78 @@ public class ProcessRawData {
 		return ts;
 
 	}
-	
-	
-	
-	
-	
-	
-	private static Map<LinkedList,LinkedList> getAgeGenderMap(String ageGenderLine){
+
+	private static Map<Integer, List> getAgeGenderMap(String ageGenderLine) {
 		
-		Map<LinkedList,LinkedList> ageGenderMap = new LinkedHashMap<LinkedList,LinkedList>();
+		System.out.println("before"+ageGenderLine);
+
+		Map<LinkedList, LinkedList> ageGenderMap = new LinkedHashMap<LinkedList, LinkedList>();
+
+		ageGenderLine = ageGenderLine.replaceAll("Available", "").replaceAll("Avallable","").replaceAll("[^a-zA-Z0-9]", "")
+				.trim();
+
+		ageGenderLine = ageGenderLine.replaceAll("Age", "ZZZ").replaceAll("A9", "age").replaceAll("Ag", "age");
+
 		
-		ageGenderLine = ageGenderLine.replaceAll("Available","");
+		System.out.println("after processing===>"+ageGenderLine);
 		
-		LinkedList age = new LinkedList();
-		LinkedList gender = new LinkedList();
-		ageGenderMap.put(age, gender);
-		
-		
+		int[] validAgeIndex = patternMatchingString(ageGenderLine, "ZZZ");
+		int[] inValidAgeIndex = patternMatchingString(ageGenderLine, "age");
+		TreeSet<Integer> ts = new TreeSet<Integer>();
+
+		ts = combineIndexes(ts, validAgeIndex);
+		ts = combineIndexes(ts, inValidAgeIndex);
+		List<Integer> ageList = removeUnwantedEntriesFromList(ts);
+
 		System.out.println(ageGenderLine);
-		return ageGenderMap;
+		for (int i : ageList)
+			System.out.println(i);
+
+		return  getAgeAndGenderValues(ageGenderLine, ageList);
+
 		
-		
-		
-		
+
 	}
+
+	private static Map<Integer, List> getAgeAndGenderValues(String ageAndGenderLine, List<Integer> indexList) {
+		
+		Map<Integer, List> ageAndGenderMap = new LinkedHashMap<Integer, List>();
+		String age=null;
+		String Gender=null;
+		
+		List<String> ageList= new java.util.LinkedList<String>();
+		List<String> genderList= new java.util.LinkedList<String>();
+		for (int i = 0; i < 3; i++) {
+			int index = indexList.get(i);
+			if(ageAndGenderLine.substring(index, index+3).equals("ZZZ")) {
+			
+				age = ageAndGenderLine.substring(index+3, index+5);
+				if(i<2)
+				Gender = ageAndGenderLine.substring(index+11,indexList.get(i+1));
+				else
+				{
+					if(ageAndGenderLine.length()>index+11)
+					Gender = ageAndGenderLine.substring(index+11,ageAndGenderLine.length());			
+					else
+						Gender = "invalid";
+				}
+				
+			}
+			else {
+				age="invalid";
+				Gender = "invalid";
+			}
+			System.out.println(age+"=======>"+Gender);
+			ageList.add(age);
+			genderList.add(Gender);
+		}
+		ageAndGenderMap.put(new Integer(0), ageList);
+		ageAndGenderMap.put(new Integer(1), genderList);
+
+		return ageAndGenderMap;
+
+	}
+	
+	
 
 }

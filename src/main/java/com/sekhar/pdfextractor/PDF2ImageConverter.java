@@ -5,12 +5,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
+import com.sekhar.pdfextractor.beans.Voter;
 import com.sekhar.pdfextractor.extractText.ProcessRawData;
 
 import net.sourceforge.tess4j.ITesseract;
@@ -31,11 +33,10 @@ public class PDF2ImageConverter {
 			}
 			document.close();
 			System.out.println("Image converation completed...!");
-			
+
 		} catch (IOException e) {
 			System.err.println("Exception while trying to create pdf document - " + e);
-		}
-		finally {
+		} finally {
 			System.out.println(" finally block : Image converation completed...!");
 		}
 
@@ -94,18 +95,26 @@ public class PDF2ImageConverter {
 
 		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
 
-		//obj.convertPDF2Images(OUTPUT_DIR);
+		// obj.convertPDF2Images(OUTPUT_DIR);
 
 		String imagePath = OUTPUT_DIR + "image-2.png";
-
+		String imagePath1 = OUTPUT_DIR + "image-3.png";
+		String imagePath2 = OUTPUT_DIR + "image-4.png";
+		String imagePath3 = OUTPUT_DIR + "image-5.png";
+		String imagePath4 = OUTPUT_DIR + "image-6.png";
 		StringBuffer sb = obj.extractDataFromImage(imagePath);
-		
+		sb.append(obj.extractDataFromImage(imagePath1));
+		sb.append(obj.extractDataFromImage(imagePath2));
+		sb.append(obj.extractDataFromImage(imagePath3));
+		sb.append(obj.extractDataFromImage(imagePath4));
 		String rawFile = "RawText.txt";
 		obj.saveRawData(sb, OUTPUT_DIR + rawFile);
-		ProcessRawData.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
+		
+		ProcessRawData prdata = new ProcessRawData();
+		Set<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
+		beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile));
 		System.out.println(OUTPUT_DIR + rawFile);
 
-	
 	}
 
 }

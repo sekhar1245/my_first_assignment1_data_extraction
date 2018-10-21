@@ -20,7 +20,7 @@ public class Voter {
 	String userName;
 	String dependentName;
 	String dependentType;
-	int age;	
+	String age;	
 	String houseNumber;
 	String gender;
 	boolean validCard;
@@ -55,10 +55,10 @@ public class Voter {
 	public void setDependentType(String dependentType) {
 		this.dependentType = dependentType;
 	}
-	public int getAge() {
+	public String getAge() {
 		return age;
 	}
-	public void setAge(int age) {
+	public void setAge(String age) {
 		this.age = age;
 	}
 	public String getHouseNumber() {
