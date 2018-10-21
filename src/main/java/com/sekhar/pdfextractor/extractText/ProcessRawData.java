@@ -36,9 +36,14 @@ public class ProcessRawData {
 			allLines.remove(1);
 			allLines.remove(0);
 			
-			for(int i=0;i<allLines.size();i++) {
+			System.out.println("size of all lines"+allLines.size());
+			
+			for(int i=0;i<allLines.size()-1;i+=5) {
 				
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i),allLines.get(i+1),allLines.get(i+2),allLines.get(i+3),allLines.get(i+4));
+				
+				System.out.println(voterSet);
+				
 				voterBeanSet.addAll(voterSet);
 			}
 			
@@ -61,9 +66,18 @@ public class ProcessRawData {
 		
 		//Setting VoterIDs
 		List<String> voterList = getVoterIDList(voterIDLine);
+		if(voterList.size()==3) {
 		firstVoter.setVoterID(voterList.get(0));
 		secondvoter.setVoterID(voterList.get(1));
 		thirdVoter.setVoterID(voterList.get(2));
+		}else {
+			
+					
+			firstVoter.setVoterID( !(NullOREmptyCheck(voterList.get(0)))?voterList.get(0):null);
+			secondvoter.setVoterID( !(NullOREmptyCheck(voterList.get(1)))?voterList.get(1):null);			
+			thirdVoter.setVoterID(!(NullOREmptyCheck(voterList.get(2)))?voterList.get(2):null);
+			
+		}
 		
 		//Setting Names
 		
@@ -78,12 +92,17 @@ public class ProcessRawData {
 		
 		
 		//House Number
-		Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
+		try{
+			Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
+		
 		List.addAll(houseNumberListMap1.keySet());
 		firstVoter.setHouseNumber(List.get(0));
 		secondvoter.setHouseNumber(List.get(1));
 		thirdVoter.setHouseNumber(List.get(2));
 		List.clear();
+		}catch(java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Handling Exeption");
+		}
 		
 		//Setting Age
 		Map<Integer,List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
@@ -101,6 +120,27 @@ public class ProcessRawData {
 		List.clear();
 		
 		
+		Map<String,String> husbandAndFatherRelationshipMap = getHusbandAndFatherListMap(husbandAndFatherLine);
+		//setting dependent Names
+		List.addAll(husbandAndFatherRelationshipMap.keySet());
+		firstVoter.setDependentName(List.get(0));
+		secondvoter.setDependentName(List.get(1));
+		thirdVoter.setDependentName(List.get(2));
+		List.clear();
+		
+		
+		//setting dependent type relationships
+		List.addAll(husbandAndFatherRelationshipMap.values());
+		firstVoter.setDependentType(List.get(0));
+		secondvoter.setDependentType(List.get(1));
+		thirdVoter.setDependentType(List.get(2));
+		List.clear();
+		
+		
+		
+		VoterSet.add(firstVoter);
+		VoterSet.add(secondvoter);
+		VoterSet.add(thirdVoter);
 		return VoterSet;
 
 	}
@@ -111,7 +151,9 @@ public class ProcessRawData {
 		System.out.println("VoterIDLine");
 
 		List<String> voterList = new ArrayList<String>();
-
+		
+		
+		voterIDLine = voterIDLine.replaceAll("OOt ", "001");
 		StringTokenizer st = new StringTokenizer(voterIDLine, " ");
 
 		while (st.hasMoreTokens()) {
@@ -121,9 +163,29 @@ public class ProcessRawData {
 
 			}
 		}
+		
+		if(voterList.size()==3) {	return voterList;			
+		}else {
+			int diff = 3-voterList.size();
+			if(diff==1) {
+				voterList.add("");
+				
+			}else if(diff==2) {
+				voterList.add("");
+				voterList.add("");
+				
+			}
+			else {
+				voterList.add("");
+				voterList.add("");
+				voterList.add("");
+				
+			}
+			return voterList;
 
-		return voterList;
+		}
 
+		
 	}
 
 	public static Map<String, String> getNamesListMap(String namesLine) {
@@ -164,7 +226,7 @@ public class ProcessRawData {
 		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
 		System.out.println("getHusbandAndFatherListMap45--->" + husbandAndFatherLine.trim());
 		husbandAndFatherLine = husbandAndFatherLine.replaceAll("'s", "").replaceAll("Husband Name", "111")
-				.replaceAll("Father Name", "222").replaceAll("Husband", "444").replaceAll("Father", "555")
+				.replaceAll("Father Name", "222").replaceAll("Mother Name", "333").replaceAll("Husband", "444").replaceAll("Father", "555").replaceAll("Mother", "666")
 				.replaceAll(":", "").trim();
 		System.out.println("Processing--->" + husbandAndFatherLine);
 
@@ -192,7 +254,7 @@ public class ProcessRawData {
 
 		System.out.println("Processing=======>" + indexList);
 
-		houseNumberListMap = getHouseNUmbersMap(houseNumberLine, indexList);
+		houseNumberListMap = getHouseNumbersMap(houseNumberLine, indexList);
 
 		return houseNumberListMap;
 
@@ -245,15 +307,19 @@ public class ProcessRawData {
 
 		int[] husbandValidStartIndex = patternMatchingString(husbandAndFatherLine, "111");
 		int[] fatherValidStartIndex = patternMatchingString(husbandAndFatherLine, "222");
-		int[] husbandInValidStartIndex = patternMatchingString(husbandAndFatherLine, "44");
-		int[] fatherInValidStartIndex = patternMatchingString(husbandAndFatherLine, "55");
+		int[] motherValidStartIndex = patternMatchingString(husbandAndFatherLine, "333");
+		int[] husbandInValidStartIndex = patternMatchingString(husbandAndFatherLine, "444");
+		int[] fatherInValidStartIndex = patternMatchingString(husbandAndFatherLine, "555");
+		int[] motherInValidStartIndex = patternMatchingString(husbandAndFatherLine, "666");
 
 		TreeSet<Integer> ts = new TreeSet<Integer>();
 
 		ts = combineIndexes(ts, husbandValidStartIndex);
 		ts = combineIndexes(ts, fatherValidStartIndex);
+		ts = combineIndexes(ts, motherValidStartIndex);
 		ts = combineIndexes(ts, husbandInValidStartIndex);
 		ts = combineIndexes(ts, fatherInValidStartIndex);
+		ts = combineIndexes(ts, motherInValidStartIndex);
 
 		return removeUnwantedEntriesFromList(ts);
 	}
@@ -261,6 +327,9 @@ public class ProcessRawData {
 	private static Map<String, String> get3ValidVotersHusbandFatherMap(String husbandAndFatherLine,
 			List<Integer> indexList) {
 
+		System.out.println("Processing from get3ValidVotersHusbandFatherMap====================================>>");
+		System.out.println(husbandAndFatherLine+"========"+indexList);
+		
 		Map<String, String> HFListMap = new LinkedHashMap<String, String>();
 
 		for (int i = 0; i < 3; i++) {
@@ -274,19 +343,33 @@ public class ProcessRawData {
 			}
 
 			HorFName = HorFName.replaceAll("[-+.^:,?']", "").trim();
+			
+			
 
 			if (HorF.equals("111")) {
-
-				HFListMap.put(HorFName, "H");
+				
+				if(!HFListMap.containsKey(HorFName)) {
+				HFListMap.put(HorFName, "Husband");}else {
+					HorFName=HorFName+" ";
+					HFListMap.put(HorFName, "Husband");
+				}
 
 			} else if (HorF.equals("222")) {
-				HFListMap.put(HorFName, "F");
+				if(!HFListMap.containsKey(HorFName)) {
+					HFListMap.put(HorFName, "Father");}else {
+						HorFName=HorFName+" ";
+						HFListMap.put(HorFName, "Father");
+					}
 
-			} else if (HorF.equals("444")) {
-				HFListMap.put(HorFName, "NH");
+			} else if (HorF.equals("333")) {
+				if(!HFListMap.containsKey(HorFName)) {
+					HFListMap.put(HorFName, "Mother");}else {
+						HorFName=HorFName+" ";
+						HFListMap.put(HorFName, "Mother");
+					}
 
-			} else {
-				HFListMap.put(HorFName, "NF");
+			}  else {
+				HFListMap.put(HorFName, "Invalid");
 			}
 
 		}
@@ -295,7 +378,7 @@ public class ProcessRawData {
 
 	}
 
-	private static Map<String, String> getHouseNUmbersMap(String houseNumberLine, List<Integer> indexList) {
+	private static Map<String, String> getHouseNumbersMap(String houseNumberLine, List<Integer> indexList) {
 
 		Map<String, String> houseListMap = new LinkedHashMap<String, String>();
 
@@ -357,12 +440,12 @@ public class ProcessRawData {
 
 			if (HorF.equals("111")) {
 
-				HFListMap.put(HorFName, "H");
+				HFListMap.put(HorFName, "Husband");
 
-			} else {
-				HFListMap.put(HorFName, "F");
+			} else if(HorF.equals("222")) {
+				HFListMap.put(HorFName, "Father");
 
-			}
+			}else HFListMap.put(HorFName, "Mother");
 
 		}
 
@@ -420,6 +503,8 @@ public class ProcessRawData {
 		
 		List<String> ageList= new java.util.LinkedList<String>();
 		List<String> genderList= new java.util.LinkedList<String>();
+		
+		
 		for (int i = 0; i < 3; i++) {
 			int index = indexList.get(i);
 			if(ageAndGenderLine.substring(index, index+3).equals("ZZZ")) {
@@ -451,6 +536,15 @@ public class ProcessRawData {
 
 	}
 	
+	
+	private static boolean NullOREmptyCheck(String str) {
+		
+		if (str==null && (str.equals(""))) 
+			return true;
+			
+			else
+				return false;
+		}
 	
 
 }

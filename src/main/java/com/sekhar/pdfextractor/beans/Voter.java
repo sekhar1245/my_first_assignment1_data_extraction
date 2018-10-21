@@ -1,18 +1,6 @@
 package com.sekhar.pdfextractor.beans;
 
 
-
-enum Gender 
-{ 
-    MALE,FEMALE; 
-}
-
-enum DependentType 
-{ 
-    Father_Name, Husband_Name; 
-} 
-
-
 public class Voter {
 	
 	
@@ -72,6 +60,14 @@ public class Voter {
 	}
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "Voter [voterID=" + voterID + ", userName=" + userName + ", dependentName=" + dependentName
+				+ ", dependentType=" + dependentType + ", age=" + age + ", houseNumber=" + houseNumber + ", gender="
+				+ gender + ", validCard=" + validCard + "]";
 	}
 	
 	
