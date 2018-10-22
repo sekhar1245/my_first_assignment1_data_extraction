@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -154,10 +155,20 @@ public List<String> convertPDF2Images(String OUTPUT_DIR,String PDF_Fila_Name) {
 		String rawFile = "RawText.txt";
 		obj.saveRawData(sb, OUTPUT_DIR + rawFile);*/
 		
+		//need to uncheck the below 3 lines
 		ExportExcel exportObject = new ExportExcel();
 		Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
 		
 		System.out.println(allVoterBeans.size());
+		
+		//String ageGenderLine ="Hoseg11311ZZZ21GenderFEMALEZZZ23GenderFEMALE";
+		//List<Integer> indexList = new ArrayList<Integer>();
+		//indexList.add(10);
+		//indexList.add(27);
+		
+		//Map<Integer, List> ageGenderMap = ProcessRawData.getAgeGenderMap(ageGenderLine);
+		
+		//System.out.println(ageGenderMap);
 		
 		
 		

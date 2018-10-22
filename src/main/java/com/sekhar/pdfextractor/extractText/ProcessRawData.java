@@ -35,20 +35,28 @@ public class ProcessRawData {
 			allLines.remove(allLines.size() - 2);
 			allLines.remove(1);
 			allLines.remove(0);
+
+			System.out.println("size of all lines" + allLines.size());
+
+		
 			
-			System.out.println("size of all lines"+allLines.size());
-			
-			for(int i=0;i<allLines.size()-1;i+=5) {
+			start : for (int i = 0; i < allLines.size() - 1; i += 5) {
 				
-				Set<Voter> voterSet = cleanseRawData(allLines.get(i),allLines.get(i+1),allLines.get(i+2),allLines.get(i+3),allLines.get(i+4));
 				
+				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
+						allLines.get(i + 3), allLines.get(i + 4));
+
 				System.out.println(voterSet);
+				
+				if(allLines.get(i+5).startsWith("Age '")) {
+					allLines.remove(i+5);
+				}
+				
 				
 				voterBeanSet.addAll(voterSet);
 			}
-			
-			
-			
+		
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -63,81 +71,78 @@ public class ProcessRawData {
 		Voter firstVoter = new Voter();
 		Voter secondvoter = new Voter();
 		Voter thirdVoter = new Voter();
-		
-		//Setting VoterIDs
+
+		// Setting VoterIDs
 		List<String> voterList = getVoterIDList(voterIDLine);
-		if(voterList.size()==3) {
-		firstVoter.setVoterID(voterList.get(0));
-		secondvoter.setVoterID(voterList.get(1));
-		thirdVoter.setVoterID(voterList.get(2));
-		}else {
-			
-					
-			firstVoter.setVoterID( !(NullOREmptyCheck(voterList.get(0)))?voterList.get(0):null);
-			secondvoter.setVoterID( !(NullOREmptyCheck(voterList.get(1)))?voterList.get(1):null);			
-			thirdVoter.setVoterID(!(NullOREmptyCheck(voterList.get(2)))?voterList.get(2):null);
-			
+		if (voterList.size() == 3) {
+			firstVoter.setVoterID(voterList.get(0));
+			secondvoter.setVoterID(voterList.get(1));
+			thirdVoter.setVoterID(voterList.get(2));
+		} else {
+
+			firstVoter.setVoterID(!(NullOREmptyCheck(voterList.get(0))) ? voterList.get(0) : null);
+			secondvoter.setVoterID(!(NullOREmptyCheck(voterList.get(1))) ? voterList.get(1) : null);
+			thirdVoter.setVoterID(!(NullOREmptyCheck(voterList.get(2))) ? voterList.get(2) : null);
+
 		}
-		
-		//Setting Names
-		
+
+		// Setting Names
+
 		Map<String, String> namesListMap = getNamesListMap(nameLine);
 		List<String> List = new ArrayList<String>(namesListMap.keySet());
+		System.out.println(nameLine);
+		System.out.println(namesListMap);
 		
+		System.out.println(List);
 		firstVoter.setUserName(List.get(0));
 		secondvoter.setUserName(List.get(1));
 		thirdVoter.setUserName(List.get(2));
-		
+
 		List.clear();
-		
-		
-		//House Number
-		try{
+
+		// House Number
+		try {
 			Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
-		
-		List.addAll(houseNumberListMap1.keySet());
-		firstVoter.setHouseNumber(List.get(0));
-		secondvoter.setHouseNumber(List.get(1));
-		thirdVoter.setHouseNumber(List.get(2));
-		List.clear();
-		}catch(java.lang.IndexOutOfBoundsException e) {
+
+			List.addAll(houseNumberListMap1.keySet());
+			firstVoter.setHouseNumber(List.get(0));
+			secondvoter.setHouseNumber(List.get(1));
+			thirdVoter.setHouseNumber(List.get(2));
+			List.clear();
+		} catch (java.lang.IndexOutOfBoundsException e) {
 			System.out.println("Handling Exeption");
 		}
-		
-		//Setting Age
-		Map<Integer,List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
+
+		// Setting Age
+		Map<Integer, List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
 		List.addAll(ageGenderMap.get(0));
 		firstVoter.setAge(List.get(0));
 		secondvoter.setAge(List.get(1));
 		thirdVoter.setAge(List.get(2));
 		List.clear();
-		
-		//Setting Gender
+
+		// Setting Gender
 		List.addAll(ageGenderMap.get(1));
 		firstVoter.setGender(List.get(0));
 		secondvoter.setGender(List.get(1));
 		thirdVoter.setGender(List.get(2));
 		List.clear();
-		
-		
-		Map<String,String> husbandAndFatherRelationshipMap = getHusbandAndFatherListMap(husbandAndFatherLine);
-		//setting dependent Names
+
+		Map<String, String> husbandAndFatherRelationshipMap = getHusbandAndFatherListMap(husbandAndFatherLine);
+		// setting dependent Names
 		List.addAll(husbandAndFatherRelationshipMap.keySet());
 		firstVoter.setDependentName(List.get(0));
 		secondvoter.setDependentName(List.get(1));
 		thirdVoter.setDependentName(List.get(2));
 		List.clear();
-		
-		
-		//setting dependent type relationships
+
+		// setting dependent type relationships
 		List.addAll(husbandAndFatherRelationshipMap.values());
 		firstVoter.setDependentType(List.get(0));
 		secondvoter.setDependentType(List.get(1));
 		thirdVoter.setDependentType(List.get(2));
 		List.clear();
-		
-		
-		
+
 		VoterSet.add(firstVoter);
 		VoterSet.add(secondvoter);
 		VoterSet.add(thirdVoter);
@@ -151,55 +156,55 @@ public class ProcessRawData {
 		System.out.println("VoterIDLine");
 
 		List<String> voterList = new ArrayList<String>();
-		
-		
-		voterIDLine = voterIDLine.replaceAll("OOt ", "001");
+
+		voterIDLine = voterIDLine.replaceAll("OOt ", "001").replaceAll("‘9", "").trim();
 		StringTokenizer st = new StringTokenizer(voterIDLine, " ");
+		
+		
 
 		while (st.hasMoreTokens()) {
 			String voiterID = st.nextToken();
-			if (voiterID.length() > 8) {
+			if (voiterID.length() > 6) {
 				voterList.add(voiterID);
 
 			}
 		}
-		
-		if(voterList.size()==3) {	return voterList;			
-		}else {
-			int diff = 3-voterList.size();
-			if(diff==1) {
+
+		if (voterList.size() == 3) {
+			return voterList;
+		} else {
+			int diff = 3 - voterList.size();
+			if (diff == 1) {
 				voterList.add("");
-				
-			}else if(diff==2) {
-				voterList.add("");
-				voterList.add("");
-				
-			}
-			else {
+
+			} else if (diff == 2) {
 				voterList.add("");
 				voterList.add("");
+
+			} else {
 				voterList.add("");
-				
+				voterList.add("");
+				voterList.add("");
+
 			}
 			return voterList;
 
 		}
 
-		
 	}
 
 	public static Map<String, String> getNamesListMap(String namesLine) {
 
 		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
 
-		System.out.println("getNamesList--->" + namesLine.trim());
+		System.out.println("String getNamesListMap --->" + namesLine.trim());
 
 		Pattern p = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(namesLine);
 		boolean b = m.find();
-		System.out.println("there is one delted Voter" + b);
+		System.out.println("there is one delted Voter Name" + b);
 
-		namesLine = namesLine.replaceAll("Name", "").replaceAll("Photo is","").trim();
+		namesLine = namesLine.replaceAll("Name", "").replaceAll("Photo is", "").trim();
 
 		List<String> namesList = new ArrayList<String>();
 
@@ -217,6 +222,9 @@ public class ProcessRawData {
 
 		}
 
+		
+		System.out.println("Exited the getNamesListMap"+namesListMap);
+		
 		return namesListMap;
 
 	}
@@ -226,8 +234,8 @@ public class ProcessRawData {
 		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
 		System.out.println("getHusbandAndFatherListMap45--->" + husbandAndFatherLine.trim());
 		husbandAndFatherLine = husbandAndFatherLine.replaceAll("'s", "").replaceAll("Husband Name", "111")
-				.replaceAll("Father Name", "222").replaceAll("Mother Name", "333").replaceAll("Husband", "444").replaceAll("Father", "555").replaceAll("Mother", "666")
-				.replaceAll(":", "").trim();
+				.replaceAll("Father Name", "222").replaceAll("Mother Name", "333").replaceAll("Husband", "444")
+				.replaceAll("Father", "555").replaceAll("Mother", "666").replaceAll(":", "").trim();
 		System.out.println("Processing--->" + husbandAndFatherLine);
 
 		List<Integer> indexList = sortFatherHusbandIndexs(husbandAndFatherLine);
@@ -328,8 +336,8 @@ public class ProcessRawData {
 			List<Integer> indexList) {
 
 		System.out.println("Processing from get3ValidVotersHusbandFatherMap====================================>>");
-		System.out.println(husbandAndFatherLine+"========"+indexList);
-		
+		System.out.println(husbandAndFatherLine + "========" + indexList);
+
 		Map<String, String> HFListMap = new LinkedHashMap<String, String>();
 
 		for (int i = 0; i < 3; i++) {
@@ -343,32 +351,33 @@ public class ProcessRawData {
 			}
 
 			HorFName = HorFName.replaceAll("[-+.^:,?']", "").trim();
-			
-			
 
 			if (HorF.equals("111")) {
-				
-				if(!HFListMap.containsKey(HorFName)) {
-				HFListMap.put(HorFName, "Husband");}else {
-					HorFName=HorFName+" ";
+
+				if (!HFListMap.containsKey(HorFName)) {
+					HFListMap.put(HorFName, "Husband");
+				} else {
+					HorFName = HorFName + " ";
 					HFListMap.put(HorFName, "Husband");
 				}
 
 			} else if (HorF.equals("222")) {
-				if(!HFListMap.containsKey(HorFName)) {
-					HFListMap.put(HorFName, "Father");}else {
-						HorFName=HorFName+" ";
-						HFListMap.put(HorFName, "Father");
-					}
+				if (!HFListMap.containsKey(HorFName)) {
+					HFListMap.put(HorFName, "Father");
+				} else {
+					HorFName = HorFName + " ";
+					HFListMap.put(HorFName, "Father");
+				}
 
 			} else if (HorF.equals("333")) {
-				if(!HFListMap.containsKey(HorFName)) {
-					HFListMap.put(HorFName, "Mother");}else {
-						HorFName=HorFName+" ";
-						HFListMap.put(HorFName, "Mother");
-					}
+				if (!HFListMap.containsKey(HorFName)) {
+					HFListMap.put(HorFName, "Mother");
+				} else {
+					HorFName = HorFName + " ";
+					HFListMap.put(HorFName, "Mother");
+				}
 
-			}  else {
+			} else {
 				HFListMap.put(HorFName, "Invalid");
 			}
 
@@ -442,10 +451,11 @@ public class ProcessRawData {
 
 				HFListMap.put(HorFName, "Husband");
 
-			} else if(HorF.equals("222")) {
+			} else if (HorF.equals("222")) {
 				HFListMap.put(HorFName, "Father");
 
-			}else HFListMap.put(HorFName, "Mother");
+			} else
+				HFListMap.put(HorFName, "Mother");
 
 		}
 
@@ -463,20 +473,20 @@ public class ProcessRawData {
 
 	}
 
-	private static Map<Integer, List> getAgeGenderMap(String ageGenderLine) {
-		
-		System.out.println("before"+ageGenderLine);
+	public static Map<Integer, List> getAgeGenderMap(String ageGenderLine) {
+
+		System.out.println("before" + ageGenderLine);
 
 		Map<LinkedList, LinkedList> ageGenderMap = new LinkedHashMap<LinkedList, LinkedList>();
 
-		ageGenderLine = ageGenderLine.replaceAll("Available", "").replaceAll("Avallable","").replaceAll("[^a-zA-Z0-9]", "")
-				.trim();
+		ageGenderLine = ageGenderLine.replaceAll("Available", "").replaceAll("Avallable", "")
+				.replaceAll("[^a-zA-Z0-9]", "").trim();
 
 		ageGenderLine = ageGenderLine.replaceAll("Age", "ZZZ").replaceAll("A9", "age").replaceAll("Ag", "age");
 
-		
-		System.out.println("after processing===>"+ageGenderLine);
-		
+		ageGenderLine = ageGenderLine.replaceAll("FEMALE", "XX").replaceAll("MALE", "YY").trim();
+		System.out.println("after processing===>" + ageGenderLine);
+
 		int[] validAgeIndex = patternMatchingString(ageGenderLine, "ZZZ");
 		int[] inValidAgeIndex = patternMatchingString(ageGenderLine, "age");
 		TreeSet<Integer> ts = new TreeSet<Integer>();
@@ -489,62 +499,298 @@ public class ProcessRawData {
 		for (int i : ageList)
 			System.out.println(i);
 
-		return  getAgeAndGenderValues(ageGenderLine, ageList);
-
-		
+		return getAgeAndGenderValues(ageGenderLine, ageList);
 
 	}
 
 	private static Map<Integer, List> getAgeAndGenderValues(String ageAndGenderLine, List<Integer> indexList) {
-		
+
 		Map<Integer, List> ageAndGenderMap = new LinkedHashMap<Integer, List>();
-		String age=null;
-		String Gender=null;
-		
-		List<String> ageList= new java.util.LinkedList<String>();
-		List<String> genderList= new java.util.LinkedList<String>();
-		
-		
-		for (int i = 0; i < 3; i++) {
-			int index = indexList.get(i);
-			if(ageAndGenderLine.substring(index, index+3).equals("ZZZ")) {
-			
-				age = ageAndGenderLine.substring(index+3, index+5);
-				if(i<2)
-				Gender = ageAndGenderLine.substring(index+11,indexList.get(i+1));
-				else
-				{
-					if(ageAndGenderLine.length()>index+11)
-					Gender = ageAndGenderLine.substring(index+11,ageAndGenderLine.length());			
-					else
-						Gender = "invalid";
+		String age = null;
+		String Gender = null;
+
+		List<String> ageList = new java.util.LinkedList<String>();
+		List<String> genderList = new java.util.LinkedList<String>();
+		// Need to make a fix for this issueif()
+		if (indexList.size() == 3) {
+			for (int i = 0; i < 3; i++) {
+				int index = indexList.get(i);
+				if (ageAndGenderLine.substring(index, index + 3).equals("ZZZ")) {
+
+					age = ageAndGenderLine.substring(index + 3, index + 5);
+
+					if (i < 2)
+						Gender = (ageAndGenderLine.substring(index + 11, indexList.get(i + 1))).equals("XX") ? "FEMALE" : "MALE";
+					else {
+						if (ageAndGenderLine.length() > index + 11)
+							Gender = (ageAndGenderLine.substring(index + 11, ageAndGenderLine.length())).equals("XX") ? "FEMALE" : "MALE";
+						else
+							Gender = "invalid";
+					}
+
+				} else {
+					age = "invalid";
+					Gender = "invalid";
 				}
-				
+				System.out.println(age + "=======>" + Gender);
+				ageList.add(age);
+				genderList.add(Gender);
 			}
+		} else {
+			if (indexList.size() == 1 && indexList.get(0) == 0) {
+				if (ageAndGenderLine.substring(0, 3).equals("ZZZ")) {
+					age = ageAndGenderLine.substring(3, 5);
+					Gender = (ageAndGenderLine.substring(11, 13).trim().equals("XX")) ? "FEMALE" : "MALE";
+
+					ageList.add(age);
+					genderList.add(Gender);
+					ageList.add("Invalid");
+					genderList.add("Invalid");
+					ageList.add("Invalid");
+					genderList.add("Invalid");
+
+				} else {
+					return get3InvalidAgeGenderMAP();
+				}
+
+			} else if (indexList.size() == 1 && !(indexList.get(0) == 0)) {
+
+				int index = indexList.get(0);
+				if (index < 26) {
+
+					if (ageAndGenderLine.substring(index, index + 3).equals("ZZZ")) {
+						age = ageAndGenderLine.substring(index + 3, index + 5);
+						Gender = (ageAndGenderLine.substring(index + 11, index + 13).trim().equals("XX")) ? "FEMALE"
+								: "MALE";
+
+						ageList.add("Invalid");
+						genderList.add("Invalid");
+						ageList.add(age);
+						genderList.add(Gender);
+						ageList.add("Invalid");
+						genderList.add("Invalid");
+
+					} else {
+						return get3InvalidAgeGenderMAP();
+					}
+
+				} else {
+					if (ageAndGenderLine.substring(index, index + 3).equals("ZZZ")) {
+						age = ageAndGenderLine.substring(index + 3, index + 5);
+						Gender = (ageAndGenderLine.substring(index + 11, index + 13).trim().equals("XX")) ? "FEMALE"
+								: "MALE";
+
+						ageList.add("Invalid");
+						genderList.add("Invalid");
+						ageList.add("Invalid");
+						genderList.add("Invalid");
+						ageList.add(age);
+						genderList.add(Gender);
+
+					} else {
+						return get3InvalidAgeGenderMAP();
+					}
+
+				}
+
+			}
+
 			else {
-				age="invalid";
-				Gender = "invalid";
+
+				int frstIndex = indexList.get(0);
+				int secondIndex = indexList.get(1);
+				if (frstIndex == 0 && secondIndex == 13) {
+
+					if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
+						age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
+						Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
+
+						ageList.add(0, age);
+						genderList.add(0, Gender);
+
+					}
+					
+					
+					else {					
+
+						ageList.add(0, "Invalid");
+						genderList.add(0, "Invalid");
+					}
+
+					if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
+
+						age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
+						Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
+
+						ageList.add(1, age);
+						genderList.add(1, Gender);
+
+					}else {					
+
+						ageList.add(1, "Invalid");
+						genderList.add(1, "Invalid");
+					}
+							
+
+					ageList.add(2, "Invalid");
+					genderList.add(2, "Invalid");
+
+				}
+				else if (frstIndex > 0 && secondIndex > 13) {
+					
+					ageList.add(0, "Invalid");
+					genderList.add(0, "Invalid");
+
+						if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
+							age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
+							Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
+									? "FEMALE"
+									: "MALE";
+
+							ageList.add(1, age);
+							genderList.add(1, Gender);
+
+						}
+						
+						
+						else {					
+
+							ageList.add(1, "Invalid");
+							genderList.add(1, "Invalid");
+						}
+
+						if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
+
+							age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
+							Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
+									? "FEMALE"
+									: "MALE";
+
+							ageList.add(2, age);
+							genderList.add(2, Gender);
+
+						}else {					
+
+							ageList.add(2, "Invalid");
+							genderList.add(2, "Invalid");
+						}
+								
+
+					
+
+					}
+					else if (frstIndex == 0 && secondIndex < 26) {
+					
+					
+						if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
+							age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
+							Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
+									? "FEMALE"
+									: "MALE";
+
+							ageList.add(1, age);
+							genderList.add(1, Gender);
+
+						}
+						
+						
+						else {					
+
+							ageList.add(0, "Invalid");
+							genderList.add(0, "Invalid");
+						}
+
+						ageList.add(1, "Invalid");
+						genderList.add(1, "Invalid");
+
+						
+						
+						if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
+
+							age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
+							Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
+									? "FEMALE"
+									: "MALE";
+
+							ageList.add(2, age);
+							genderList.add(2, Gender);
+
+						}else {					
+
+							ageList.add(2, "Invalid");
+							genderList.add(2, "Invalid");
+						}
+								
+
+					
+
+					}else {
+						
+						
+						System.out.println("Dont know what to do ????");
+						
+						
+						
+						
+					}
+					
+					
+				
+
 			}
-			System.out.println(age+"=======>"+Gender);
-			ageList.add(age);
-			genderList.add(Gender);
+
 		}
+
+		ageAndGenderMap.put(new Integer(0), ageList);
+
+		ageAndGenderMap.put(new Integer(1), genderList);
+
+		return ageAndGenderMap;
+
+	}
+
+	public static Map<Integer, List> get3InvalidAgeGenderMAP() {
+
+		Map<Integer, List> ageAndGenderMap = new LinkedHashMap<Integer, List>();
+		List<String> ageList = new java.util.LinkedList<String>();
+		List<String> genderList = new java.util.LinkedList<String>();
+		ageList.add("Invalid");
+		genderList.add("Invalid");
+		ageList.add("Invalid");
+		genderList.add("Invalid");
+		ageList.add("Invalid");
+		genderList.add("Invalid");
+
 		ageAndGenderMap.put(new Integer(0), ageList);
 		ageAndGenderMap.put(new Integer(1), genderList);
 
 		return ageAndGenderMap;
 
 	}
-	
-	
+
 	private static boolean NullOREmptyCheck(String str) {
-		
-		if (str==null && (str.equals(""))) 
+
+		if (str == null && (str.equals("")))
 			return true;
-			
-			else
-				return false;
-		}
-	
+
+		else
+			return false;
+	}
+
+	public static List get3InvalidObject() {
+
+		List<String> inValidList = new java.util.LinkedList<String>();
+
+		inValidList.add("Invalid");
+		inValidList.add("Invalid");
+		inValidList.add("Invalid");
+
+		return inValidList;
+
+	}
 
 }
