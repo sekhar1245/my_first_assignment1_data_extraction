@@ -36,26 +36,33 @@ public class ProcessRawData {
 			allLines.remove(1);
 			allLines.remove(0);
 
-			System.out.println("size of all lines" + allLines.size());
+			for (int i = 0; i < allLines.size() - 1; i += 5) {
 
-		
-			
-			start : for (int i = 0; i < allLines.size() - 1; i += 5) {
-				
-				
+				if (i == 40 || i == 41 || i == 50 || i == 51)
+					System.out.println(i + "----->" + allLines.get(i));
+				if (NullOREmptyCheck(allLines.get(i))) {
+					allLines.remove(i);
+				}
+			}
+
+			for (int i = 0; i < allLines.size() - 1; i += 5) {
+
+				System.out.println("Voter: " + allLines.get(i) + " Name: " + allLines.get(i + 1) + " Dependent Name: "
+						+ allLines.get(i + 2) + " House No:" + allLines.get(i + 3) + " Age: " + allLines.get(i + 4));
+
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
 
+				System.out.println("===================================================");
 				System.out.println(voterSet);
-				
-				if(allLines.get(i+5).startsWith("Age '")) {
-					allLines.remove(i+5);
+				System.out.println("===================================================");
+
+				if (allLines.get(i + 5).startsWith("Age") || allLines.get(i + 5).equals("")) {
+					allLines.remove(i + 5);
 				}
-				
-				
+
 				voterBeanSet.addAll(voterSet);
 			}
-		
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -88,22 +95,26 @@ public class ProcessRawData {
 
 		// Setting Names
 
-		Map<String, String> namesListMap = getNamesListMap(nameLine);
-		List<String> List = new ArrayList<String>(namesListMap.keySet());
-		System.out.println(nameLine);
-		System.out.println(namesListMap);
-		
-		System.out.println(List);
-		firstVoter.setUserName(List.get(0));
-		secondvoter.setUserName(List.get(1));
-		thirdVoter.setUserName(List.get(2));
+		try {
+			Map<String, String> namesListMap = getNamesListMap(nameLine);
+			List<String> List = new ArrayList<String>(namesListMap.keySet());
+			// System.out.println(nameLine);
+			// System.out.println(namesListMap);
 
-		List.clear();
+			// System.out.println(List);
+			firstVoter.setUserName(List.get(0));
+			secondvoter.setUserName(List.get(1));
+			thirdVoter.setUserName(List.get(2));
+			List.clear();
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Handling Exeption");
+		}
 
 		// House Number
 		try {
 			Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
 
+			List<String> List = new java.util.LinkedList<>();
 			List.addAll(houseNumberListMap1.keySet());
 			firstVoter.setHouseNumber(List.get(0));
 			secondvoter.setHouseNumber(List.get(1));
@@ -114,34 +125,46 @@ public class ProcessRawData {
 		}
 
 		// Setting Age
-		Map<Integer, List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
-		List.addAll(ageGenderMap.get(0));
-		firstVoter.setAge(List.get(0));
-		secondvoter.setAge(List.get(1));
-		thirdVoter.setAge(List.get(2));
-		List.clear();
+		try {
+			List<String> List = new java.util.LinkedList<>();
+			Map<Integer, List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
+			List.addAll(ageGenderMap.get(0));
+			firstVoter.setAge(List.get(0));
+			secondvoter.setAge(List.get(1));
+			thirdVoter.setAge(List.get(2));
+			List.clear();
 
-		// Setting Gender
-		List.addAll(ageGenderMap.get(1));
-		firstVoter.setGender(List.get(0));
-		secondvoter.setGender(List.get(1));
-		thirdVoter.setGender(List.get(2));
-		List.clear();
+			// Setting Gender
+			List.addAll(ageGenderMap.get(1));
+			firstVoter.setGender(List.get(0));
+			secondvoter.setGender(List.get(1));
+			thirdVoter.setGender(List.get(2));
+			List.clear();
 
-		Map<String, String> husbandAndFatherRelationshipMap = getHusbandAndFatherListMap(husbandAndFatherLine);
-		// setting dependent Names
-		List.addAll(husbandAndFatherRelationshipMap.keySet());
-		firstVoter.setDependentName(List.get(0));
-		secondvoter.setDependentName(List.get(1));
-		thirdVoter.setDependentName(List.get(2));
-		List.clear();
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Handling Exeption");
+		}
 
-		// setting dependent type relationships
-		List.addAll(husbandAndFatherRelationshipMap.values());
-		firstVoter.setDependentType(List.get(0));
-		secondvoter.setDependentType(List.get(1));
-		thirdVoter.setDependentType(List.get(2));
-		List.clear();
+		try {
+			Map<String, String> husbandAndFatherRelationshipMap = getHusbandAndFatherListMap(husbandAndFatherLine);
+			List<String> List = new java.util.LinkedList<>();
+			// setting dependent Names
+			List.addAll(husbandAndFatherRelationshipMap.keySet());
+			firstVoter.setDependentName(List.get(0));
+			secondvoter.setDependentName(List.get(1));
+			thirdVoter.setDependentName(List.get(2));
+			List.clear();
+
+			// setting dependent type relationships
+			List.addAll(husbandAndFatherRelationshipMap.values());
+			firstVoter.setDependentType(List.get(0));
+			secondvoter.setDependentType(List.get(1));
+			thirdVoter.setDependentType(List.get(2));
+			List.clear();
+
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Handling Exeption");
+		}
 
 		VoterSet.add(firstVoter);
 		VoterSet.add(secondvoter);
@@ -153,14 +176,12 @@ public class ProcessRawData {
 	// Set<String>
 	public static List<String> getVoterIDList(String voterIDLine) {
 
-		System.out.println("VoterIDLine");
+		//// System.out.println("VoterIDLine");
 
 		List<String> voterList = new ArrayList<String>();
 
 		voterIDLine = voterIDLine.replaceAll("OOt ", "001").replaceAll("‘9", "").trim();
 		StringTokenizer st = new StringTokenizer(voterIDLine, " ");
-		
-		
 
 		while (st.hasMoreTokens()) {
 			String voiterID = st.nextToken();
@@ -197,12 +218,12 @@ public class ProcessRawData {
 
 		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
 
-		System.out.println("String getNamesListMap --->" + namesLine.trim());
+		// System.out.println("String getNamesListMap --->" + namesLine.trim());
 
 		Pattern p = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(namesLine);
 		boolean b = m.find();
-		System.out.println("there is one delted Voter Name" + b);
+		// System.out.println("there is one delted Voter Name" + b);
 
 		namesLine = namesLine.replaceAll("Name", "").replaceAll("Photo is", "").trim();
 
@@ -214,7 +235,7 @@ public class ProcessRawData {
 			String name = st.nextToken().trim();
 			// namesList.add(name);
 			if (name.contains("\\") || name.contains(".") || name.contains("\\")) {
-				System.out.println("NotValid entry voter" + name);
+				// System.out.println("NotValid entry voter" + name);
 				namesListMap.put(name, "NotValid");
 			} else {
 				namesListMap.put(name, "Valid");
@@ -222,9 +243,8 @@ public class ProcessRawData {
 
 		}
 
-		
-		System.out.println("Exited the getNamesListMap"+namesListMap);
-		
+		// System.out.println("Exited the getNamesListMap"+namesListMap);
+
 		return namesListMap;
 
 	}
@@ -232,11 +252,12 @@ public class ProcessRawData {
 	public static Map<String, String> getHusbandAndFatherListMap(String husbandAndFatherLine) {
 
 		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
-		System.out.println("getHusbandAndFatherListMap45--->" + husbandAndFatherLine.trim());
+		// System.out.println("getHusbandAndFatherListMap45--->" +
+		// husbandAndFatherLine.trim());
 		husbandAndFatherLine = husbandAndFatherLine.replaceAll("'s", "").replaceAll("Husband Name", "111")
 				.replaceAll("Father Name", "222").replaceAll("Mother Name", "333").replaceAll("Husband", "444")
 				.replaceAll("Father", "555").replaceAll("Mother", "666").replaceAll(":", "").trim();
-		System.out.println("Processing--->" + husbandAndFatherLine);
+		// System.out.println("Processing--->" + husbandAndFatherLine);
 
 		List<Integer> indexList = sortFatherHusbandIndexs(husbandAndFatherLine);
 
@@ -253,14 +274,14 @@ public class ProcessRawData {
 	public static Map<String, String> getHouseNumbersMap(String houseNumberLine) {
 
 		Map<String, String> houseNumberListMap = new LinkedHashMap<String, String>();
-		System.out.println("getHouseNumbersMap--->" + houseNumberLine.trim());
+		// System.out.println("getHouseNumbersMap--->" + houseNumberLine.trim());
 		houseNumberLine = houseNumberLine.replaceAll("House Number", "454").replaceAll("Ho", "545").replaceAll(" :", "")
 				.trim();
-		System.out.println("Processing--->" + houseNumberLine);
+		// System.out.println("Processing--->" + houseNumberLine);
 
 		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
 
-		System.out.println("Processing=======>" + indexList);
+		// System.out.println("Processing=======>" + indexList);
 
 		houseNumberListMap = getHouseNumbersMap(houseNumberLine, indexList);
 
@@ -280,7 +301,7 @@ public class ProcessRawData {
 				i++;
 			}
 		} catch (IllegalStateException e) {
-			System.out.println("No results found");
+			// System.out.println("No results found");
 
 		}
 
@@ -335,8 +356,9 @@ public class ProcessRawData {
 	private static Map<String, String> get3ValidVotersHusbandFatherMap(String husbandAndFatherLine,
 			List<Integer> indexList) {
 
-		System.out.println("Processing from get3ValidVotersHusbandFatherMap====================================>>");
-		System.out.println(husbandAndFatherLine + "========" + indexList);
+		// System.out.println("Processing from
+		// get3ValidVotersHusbandFatherMap====================================>>");
+		// System.out.println(husbandAndFatherLine + "========" + indexList);
 
 		Map<String, String> HFListMap = new LinkedHashMap<String, String>();
 
@@ -404,7 +426,7 @@ public class ProcessRawData {
 			if (validHouse.equals("454")) {
 
 				houseNumber = houseNumber.replaceAll("[^0-9]", "-");
-				System.out.println(houseNumber);
+				// System.out.println(houseNumber);
 
 				if (houseNumber.equals("-")) {
 
@@ -475,7 +497,7 @@ public class ProcessRawData {
 
 	public static Map<Integer, List> getAgeGenderMap(String ageGenderLine) {
 
-		System.out.println("before" + ageGenderLine);
+		// System.out.println("before" + ageGenderLine);
 
 		Map<LinkedList, LinkedList> ageGenderMap = new LinkedHashMap<LinkedList, LinkedList>();
 
@@ -484,8 +506,8 @@ public class ProcessRawData {
 
 		ageGenderLine = ageGenderLine.replaceAll("Age", "ZZZ").replaceAll("A9", "age").replaceAll("Ag", "age");
 
-		ageGenderLine = ageGenderLine.replaceAll("FEMALE", "XX").replaceAll("MALE", "YY").trim();
-		System.out.println("after processing===>" + ageGenderLine);
+		ageGenderLine = ageGenderLine.replaceAll("FEMALE", "XX").replaceAll("MALE", "YY").replaceAll("I", "").trim();
+		// System.out.println("after processing===>" + ageGenderLine);
 
 		int[] validAgeIndex = patternMatchingString(ageGenderLine, "ZZZ");
 		int[] inValidAgeIndex = patternMatchingString(ageGenderLine, "age");
@@ -495,9 +517,9 @@ public class ProcessRawData {
 		ts = combineIndexes(ts, inValidAgeIndex);
 		List<Integer> ageList = removeUnwantedEntriesFromList(ts);
 
-		System.out.println(ageGenderLine);
-		for (int i : ageList)
-			System.out.println(i);
+		// System.out.println(ageGenderLine);
+		// for (int i : ageList)
+		// System.out.println(i);
 
 		return getAgeAndGenderValues(ageGenderLine, ageList);
 
@@ -520,10 +542,13 @@ public class ProcessRawData {
 					age = ageAndGenderLine.substring(index + 3, index + 5);
 
 					if (i < 2)
-						Gender = (ageAndGenderLine.substring(index + 11, indexList.get(i + 1))).equals("XX") ? "FEMALE" : "MALE";
+						Gender = (ageAndGenderLine.substring(index + 11, indexList.get(i + 1))).equals("XX") ? "FEMALE"
+								: "MALE";
 					else {
 						if (ageAndGenderLine.length() > index + 11)
-							Gender = (ageAndGenderLine.substring(index + 11, ageAndGenderLine.length())).equals("XX") ? "FEMALE" : "MALE";
+							Gender = (ageAndGenderLine.substring(index + 11, ageAndGenderLine.length())).equals("XX")
+									? "FEMALE"
+									: "MALE";
 						else
 							Gender = "invalid";
 					}
@@ -532,7 +557,7 @@ public class ProcessRawData {
 					age = "invalid";
 					Gender = "invalid";
 				}
-				System.out.println(age + "=======>" + Gender);
+				// System.out.println(age + "=======>" + Gender);
 				ageList.add(age);
 				genderList.add(Gender);
 			}
@@ -611,9 +636,8 @@ public class ProcessRawData {
 						genderList.add(0, Gender);
 
 					}
-					
-					
-					else {					
+
+					else {
 
 						ageList.add(0, "Invalid");
 						genderList.add(0, "Invalid");
@@ -629,117 +653,96 @@ public class ProcessRawData {
 						ageList.add(1, age);
 						genderList.add(1, Gender);
 
-					}else {					
+					} else {
 
 						ageList.add(1, "Invalid");
 						genderList.add(1, "Invalid");
 					}
-							
 
 					ageList.add(2, "Invalid");
 					genderList.add(2, "Invalid");
 
-				}
-				else if (frstIndex > 0 && secondIndex > 13) {
-					
+				} else if (frstIndex > 0 && secondIndex > 13) {
+
 					ageList.add(0, "Invalid");
 					genderList.add(0, "Invalid");
 
-						if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
-							age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
-							Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
-									? "FEMALE"
-									: "MALE";
+					if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
+						age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
+						Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
 
-							ageList.add(1, age);
-							genderList.add(1, Gender);
-
-						}
-						
-						
-						else {					
-
-							ageList.add(1, "Invalid");
-							genderList.add(1, "Invalid");
-						}
-
-						if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
-
-							age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
-							Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
-									? "FEMALE"
-									: "MALE";
-
-							ageList.add(2, age);
-							genderList.add(2, Gender);
-
-						}else {					
-
-							ageList.add(2, "Invalid");
-							genderList.add(2, "Invalid");
-						}
-								
-
-					
+						ageList.add(1, age);
+						genderList.add(1, Gender);
 
 					}
-					else if (frstIndex == 0 && secondIndex < 26) {
-					
-					
-						if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
-							age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
-							Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
-									? "FEMALE"
-									: "MALE";
 
-							ageList.add(1, age);
-							genderList.add(1, Gender);
-
-						}
-						
-						
-						else {					
-
-							ageList.add(0, "Invalid");
-							genderList.add(0, "Invalid");
-						}
+					else {
 
 						ageList.add(1, "Invalid");
 						genderList.add(1, "Invalid");
-
-						
-						
-						if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
-
-							age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
-							Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
-									? "FEMALE"
-									: "MALE";
-
-							ageList.add(2, age);
-							genderList.add(2, Gender);
-
-						}else {					
-
-							ageList.add(2, "Invalid");
-							genderList.add(2, "Invalid");
-						}
-								
-
-					
-
-					}else {
-						
-						
-						System.out.println("Dont know what to do ????");
-						
-						
-						
-						
 					}
-					
-					
-				
+
+					if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
+
+						age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
+						Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
+
+						ageList.add(2, age);
+						genderList.add(2, Gender);
+
+					} else {
+
+						ageList.add(2, "Invalid");
+						genderList.add(2, "Invalid");
+					}
+
+				} else if (frstIndex == 0 && secondIndex < 26) {
+
+					if (ageAndGenderLine.substring(frstIndex, frstIndex + 3).equals("ZZZ")) {
+						age = ageAndGenderLine.substring(frstIndex + 3, frstIndex + 5);
+						Gender = (ageAndGenderLine.substring(frstIndex + 11, frstIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
+
+						ageList.add(0, age);
+						genderList.add(0, Gender);
+
+					}
+
+					else {
+
+						ageList.add(0, "Invalid");
+						genderList.add(0, "Invalid");
+					}
+
+					ageList.add(1, "Invalid");
+					genderList.add(1, "Invalid");
+
+					if (ageAndGenderLine.substring(secondIndex, secondIndex + 3).equals("ZZZ")) {
+
+						age = ageAndGenderLine.substring(secondIndex + 3, secondIndex + 5);
+						Gender = (ageAndGenderLine.substring(secondIndex + 11, secondIndex + 13).trim().equals("XX"))
+								? "FEMALE"
+								: "MALE";
+
+						ageList.add(2, age);
+						genderList.add(2, Gender);
+
+					} else {
+
+						ageList.add(2, "Invalid");
+						genderList.add(2, "Invalid");
+					}
+
+				} else {
+
+					// System.out.println("Dont know what to do ????");
+
+				}
 
 			}
 

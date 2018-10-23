@@ -137,46 +137,31 @@ public List<String> convertPDF2Images(String OUTPUT_DIR,String PDF_Fila_Name) {
 
 	public static void main(String arg[]) throws Exception {
 
-		/*PDF2ImageConverter obj = new PDF2ImageConverter();
-
+	/*	PDF2ImageConverter obj = new PDF2ImageConverter();
 		File f = new File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-
-		// String OUTPUT_DIR = "E:\\sekhar\\image_dump\\";
-
 		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
 
-		List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
-		
-		
+		//List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);		
 
-		String imagePath = OUTPUT_DIR + "image-2.png";
+		String imagePath = OUTPUT_DIR + "image-7.png";
 		StringBuffer sb = obj.extractDataFromImage(imagePath);
-
 		String rawFile = "RawText.txt";
-		obj.saveRawData(sb, OUTPUT_DIR + rawFile);*/
+		//obj.saveRawData(sb, OUTPUT_DIR + rawFile);
+		
+		ProcessRawData prdata = new ProcessRawData();
+		Set<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
+		 beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR +
+		 rawFile));
+		System.out.println("Size of the beans" + beansSet.size());
+		
+		*/
+		
 		
 		//need to uncheck the below 3 lines
-		ExportExcel exportObject = new ExportExcel();
-		Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
-		
-		System.out.println(allVoterBeans.size());
-		
-		//String ageGenderLine ="Hoseg11311ZZZ21GenderFEMALEZZZ23GenderFEMALE";
-		//List<Integer> indexList = new ArrayList<Integer>();
-		//indexList.add(10);
-		//indexList.add(27);
-		
-		//Map<Integer, List> ageGenderMap = ProcessRawData.getAgeGenderMap(ageGenderLine);
-		
-		//System.out.println(ageGenderMap);
-		
-		
-		
-		//ProcessRawData prdata = new ProcessRawData();
-		//Set<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
-		// beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR +
-		// rawFile));
-		//System.out.println("Size of the beans" + beansSet.size());
+				ExportExcel exportObject = new ExportExcel();
+				Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
+				
+			System.out.println(allVoterBeans.size());
 
 	}
 
