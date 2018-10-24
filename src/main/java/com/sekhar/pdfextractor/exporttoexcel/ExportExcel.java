@@ -16,6 +16,7 @@ import com.sekhar.pdfextractor.extractText.ProcessRawData;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -34,7 +35,7 @@ public class ExportExcel {
 
 	public Set<Voter> retrieveBeanObjects() throws IOException {
 
-		FileOutputStream out = new FileOutputStream(new File("NewFile.xlsx"));
+		FileOutputStream out = new FileOutputStream(new File("NewFile45.xlsx"));
 
 		Set<Voter> beansSet = new HashSet<Voter>();
 
@@ -46,7 +47,7 @@ public class ExportExcel {
 			pdf2imageconverter.saveRawData(buffer, saveToPath + RAWDATAFile);
 
 			Set<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
-			System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
+			//System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
 			generateExcel(workbook, beanData, beansSet.size(), out);
 			PrintWriter writer = new PrintWriter(saveToPath + RAWDATAFile);
 			writer.close();
@@ -57,6 +58,37 @@ public class ExportExcel {
 		return beansSet;
 
 	}
+	
+	
+	
+	public void retrieveBeanObjectsAndExportToExcel() throws IOException {
+
+		FileOutputStream out = new FileOutputStream(new File("Sample_Excel.xlsx"));
+
+		Set<Voter> beansSet = new HashSet<Voter>();
+
+		List<String> imageNamesList = pdf2imageconverter.convertPDF2Images(saveToPath);
+
+		StringBuffer buffer = null;
+		for (int i = 2; i < imageNamesList.size() - 1; i++) {
+			buffer = pdf2imageconverter.extractDataFromImage(imageNamesList.get(i).trim());
+			pdf2imageconverter.saveRawData(buffer, saveToPath + RAWDATAFile);
+
+			Set<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
+			//System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
+			
+			PrintWriter writer = new PrintWriter(saveToPath + RAWDATAFile);
+			writer.close();
+			beansSet.addAll(beanData);
+
+		}
+
+		generateExcel(workbook, beansSet);
+		
+		workbook.write(out);
+
+	}
+	
 
 	public static void generateExcel(XSSFWorkbook workbook, Set<Voter> beanData, int voterCount, FileOutputStream out) {
 		try {
@@ -66,6 +98,8 @@ public class ExportExcel {
 
 				sheet = workbook.createSheet(Sheet_Name);
 
+			}else {
+				sheet = workbook.getSheet(Sheet_Name);
 			}
 
 			for (Voter voter : beanData) {
@@ -82,6 +116,85 @@ public class ExportExcel {
 		}
 
 	}
+	
+	
+	
+	
+	public static void generateExcel(XSSFWorkbook workbook, Set<Voter> beanData) {
+		try {
+
+			int voterCount=1;
+			XSSFSheet sheet = null;
+			if (workbook.getSheet(Sheet_Name) == null) {
+
+				sheet = workbook.createSheet(Sheet_Name);
+
+			}else {
+				sheet = workbook.getSheet(Sheet_Name);
+			}
+
+			XSSFCellStyle style = workbook.createCellStyle();
+			Row titleRow = sheet.createRow(0);
+			style.setWrapText(true);
+			titleRow.setRowStyle(style);
+			
+			
+			addColumnTitles(titleRow);
+			
+			
+			
+			for (Voter voter : beanData) {
+				
+				Row row = sheet.createRow(voterCount);
+				style.setWrapText(true);
+				row.setRowStyle(style);
+				createList(voter, row);
+				voterCount+=1;
+
+			}
+			// file name with path
+			//workbook.write(out);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void addColumnTitles(Row row) {
+		// TODO Auto-generated method stub
+		
+		row.setHeight((short)-1);
+		
+		Cell cell = row.createCell(0);
+		cell.setCellValue("VoterID");
+
+		cell = row.createCell(1);
+		cell.setCellValue("VoterName");
+
+		cell = row.createCell(2);
+		cell.setCellValue("Relationship Type ");
+
+		cell = row.createCell(3);
+		cell.setCellValue("Husband//Father//Mother Name");
+		
+
+		cell = row.createCell(4);
+		cell.setCellValue("Age");
+
+		cell = row.createCell(5);
+		cell.setCellValue("Gender");
+
+		cell = row.createCell(6);
+		cell.setCellValue("House No");
+
+	
+	
+	
+	
+	}
+
+
 
 	private static void createList(Voter voter, Row row) // creating cells for each row
 	{
@@ -106,8 +219,6 @@ public class ExportExcel {
 		cell = row.createCell(6);
 		cell.setCellValue(voter.getHouseNumber());
 
-		cell = row.createCell(7);
-		cell.setCellValue(voter.getHouseNumber());
 
 	}
 

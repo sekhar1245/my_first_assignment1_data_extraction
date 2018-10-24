@@ -32,34 +32,46 @@ public class ProcessRawData {
 		try {
 			List<String> allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
-			allLines.remove(allLines.size() - 2);
-			allLines.remove(1);
-			allLines.remove(0);
+			
+			
+			
+			System.out.println("Handling Image "+rawFilePath);
+			System.out.println("before  processing list size "+allLines.size());
+			
+			for (int i = 0; i < allLines.size() - 1; i++) {
 
-			for (int i = 0; i < allLines.size() - 1; i += 5) {
-
-				if (i == 40 || i == 41 || i == 50 || i == 51)
-					System.out.println(i + "----->" + allLines.get(i));
-				if (NullOREmptyCheck(allLines.get(i))) {
+				if(allLines.get(i).trim().equals("")) {
 					allLines.remove(i);
 				}
+				
 			}
+			
+			
+			System.out.println("allLines.remove(allLines.size() - 2)" + allLines.get(allLines.size() - 2));
+			allLines.remove(allLines.size() - 2);
+			
+			System.out.println("allLines.remove(1);" + allLines.get(1));
+			allLines.remove(1);
+			
+			System.out.println("allLines.remove(0);" + allLines.get(0));
+			allLines.remove(0);
+			
+			
+			
+			
+			System.out.println("final list size"+allLines.size());
 
-			for (int i = 0; i < allLines.size() - 1; i += 5) {
-
-				System.out.println("Voter: " + allLines.get(i) + " Name: " + allLines.get(i + 1) + " Dependent Name: "
-						+ allLines.get(i + 2) + " House No:" + allLines.get(i + 3) + " Age: " + allLines.get(i + 4));
+			for (int i = 0; i < allLines.size() - allLines.size()%5; i += 5) {
+				
+				
 
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
-
-				System.out.println("===================================================");
+				
+				System.out.println(i+"===============================================================================");
 				System.out.println(voterSet);
-				System.out.println("===================================================");
-
-				if (allLines.get(i + 5).startsWith("Age") || allLines.get(i + 5).equals("")) {
-					allLines.remove(i + 5);
-				}
+				System.out.println("===============================================================================");
+				
 
 				voterBeanSet.addAll(voterSet);
 			}
@@ -107,7 +119,7 @@ public class ProcessRawData {
 			thirdVoter.setUserName(List.get(2));
 			List.clear();
 		} catch (java.lang.IndexOutOfBoundsException e) {
-			System.out.println("Handling Exeption");
+			System.out.println("getNamesListMap--->Handling Exeption");
 		}
 
 		// House Number
@@ -121,7 +133,7 @@ public class ProcessRawData {
 			thirdVoter.setHouseNumber(List.get(2));
 			List.clear();
 		} catch (java.lang.IndexOutOfBoundsException e) {
-			System.out.println("Handling Exeption");
+			System.out.println("getHouseNumbersMap--> Handling Exeption");
 		}
 
 		// Setting Age
@@ -142,7 +154,7 @@ public class ProcessRawData {
 			List.clear();
 
 		} catch (java.lang.IndexOutOfBoundsException e) {
-			System.out.println("Handling Exeption");
+			System.out.println("getAgeGenderMap-->Handling Exeption");
 		}
 
 		try {
@@ -163,7 +175,7 @@ public class ProcessRawData {
 			List.clear();
 
 		} catch (java.lang.IndexOutOfBoundsException e) {
-			System.out.println("Handling Exeption");
+			System.out.println("getAgeGenderMap--->Handling Exeption");
 		}
 
 		VoterSet.add(firstVoter);
@@ -281,7 +293,7 @@ public class ProcessRawData {
 
 		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
 
-		// System.out.println("Processing=======>" + indexList);
+	
 
 		houseNumberListMap = getHouseNumbersMap(houseNumberLine, indexList);
 
