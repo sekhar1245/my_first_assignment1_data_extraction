@@ -32,46 +32,37 @@ public class ProcessRawData {
 		try {
 			List<String> allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
-			
-			
-			
-			System.out.println("Handling Image "+rawFilePath);
-			System.out.println("before  processing list size "+allLines.size());
-			
+			System.out.println("Handling Image " + rawFilePath);
+			System.out.println("before  processing list size " + allLines.size());
+
 			for (int i = 0; i < allLines.size() - 1; i++) {
 
-				if(allLines.get(i).trim().equals("")) {
+				if (allLines.get(i).trim().equals("")) {
 					allLines.remove(i);
 				}
-				
+
 			}
-			
-			
+
 			System.out.println("allLines.remove(allLines.size() - 2)" + allLines.get(allLines.size() - 2));
 			allLines.remove(allLines.size() - 2);
-			
+
 			System.out.println("allLines.remove(1);" + allLines.get(1));
 			allLines.remove(1);
-			
+
 			System.out.println("allLines.remove(0);" + allLines.get(0));
 			allLines.remove(0);
-			
-			
-			
-			
-			System.out.println("final list size"+allLines.size());
 
-			for (int i = 0; i < allLines.size() - allLines.size()%5; i += 5) {
-				
-				
+			System.out.println("final list size" + allLines.size());
+
+			for (int i = 0; i < allLines.size() - allLines.size() % 5; i += 5) {
 
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
-				
-				System.out.println(i+"===============================================================================");
+
+				System.out
+						.println(i + "===============================================================================");
 				System.out.println(voterSet);
 				System.out.println("===============================================================================");
-				
 
 				voterBeanSet.addAll(voterSet);
 			}
@@ -292,8 +283,6 @@ public class ProcessRawData {
 		// System.out.println("Processing--->" + houseNumberLine);
 
 		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
-
-	
 
 		houseNumberListMap = getHouseNumbersMap(houseNumberLine, indexList);
 

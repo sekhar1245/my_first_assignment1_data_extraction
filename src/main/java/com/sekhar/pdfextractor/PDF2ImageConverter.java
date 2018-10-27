@@ -168,7 +168,7 @@ public class PDF2ImageConverter {
 
 	public static void main(String arg[]) throws Exception {
 
-		/*PDF2ImageConverter obj = new PDF2ImageConverter();
+		PDF2ImageConverter obj = new PDF2ImageConverter();
 		File f = new File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
 
@@ -191,20 +191,20 @@ public class PDF2ImageConverter {
 		
 		ExportExcel.generateExcel(workbook, beansSet, 0, out);
 		beansSet.clear();
-		out.close();*/
+		out.close();
 		
 
 		// need to uncheck the below 3 lines
 
 		
-		  ExportExcel exportObject = new ExportExcel();
+		 /* ExportExcel exportObject = new ExportExcel();
 		  
 		  XSSFWorkbook workbook = new XSSFWorkbook();
 			String Sheet_Name = "sheet1";
 			FileOutputStream out = new FileOutputStream(new File("NewFile17.xlsx"));
 		  
 			exportObject.retrieveBeanObjectsAndExportToExcel();
-		  
+		  */
 		 // Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
 		  
 		 // System.out.println(allVoterBeans.size());
