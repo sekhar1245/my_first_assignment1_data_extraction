@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sekhar.pdfextractor.PDF2ImageConverter;
 import com.sekhar.pdfextractor.beans.Voter;
+import com.sekhar.pdfextractor.coverter.PDF2ImageConverter;
 import com.sekhar.pdfextractor.extractText.ProcessRawData;
 
 import org.apache.poi.ss.usermodel.Cell;

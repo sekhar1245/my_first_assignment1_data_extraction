@@ -52,9 +52,20 @@ public class ProcessRawData {
 			System.out.println("allLines.remove(0);" + allLines.get(0));
 			allLines.remove(0);
 
-			System.out.println("final list size" + allLines.size());
+			System.out.println("final list size " + allLines.size());
+
+			System.out.println("The last line is " + allLines.get(allLines.size() - 1));
+			
+			
+			if((allLines.size()-1)%5!=0) {
+				
+				allLines=adjustInputLines(allLines);
+			}
+			
 
 			for (int i = 0; i < allLines.size() - allLines.size() % 5; i += 5) {
+
+				System.out.println("Address Input Data is " + allLines.get(i + 3));
 
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
@@ -115,10 +126,10 @@ public class ProcessRawData {
 
 		// House Number
 		try {
-			Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
+			//Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
 
-			List<String> List = new java.util.LinkedList<>();
-			List.addAll(houseNumberListMap1.keySet());
+			List<String> List =getHouseNumbersMap(houseNumberLine);
+			
 			firstVoter.setHouseNumber(List.get(0));
 			secondvoter.setHouseNumber(List.get(1));
 			thirdVoter.setHouseNumber(List.get(2));
@@ -274,19 +285,17 @@ public class ProcessRawData {
 
 	}
 
-	public static Map<String, String> getHouseNumbersMap(String houseNumberLine) {
+	public static List<String> getHouseNumbersMap(String houseNumberLine) {
 
-		Map<String, String> houseNumberListMap = new LinkedHashMap<String, String>();
+		// List<String> houseNumberList = new ArrayList<String>();
 		// System.out.println("getHouseNumbersMap--->" + houseNumberLine.trim());
-		houseNumberLine = houseNumberLine.replaceAll("House Number", "454").replaceAll("Ho", "545").replaceAll(" :", "")
+		houseNumberLine = houseNumberLine.replaceAll("House Number", "XXX").replaceAll("Ho", "YYY").replaceAll(" :", "")
 				.trim();
 		// System.out.println("Processing--->" + houseNumberLine);
 
 		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
 
-		houseNumberListMap = getHouseNumbersMap(houseNumberLine, indexList);
-
-		return houseNumberListMap;
+		return getHouseNumbersMap(houseNumberLine, indexList);
 
 	}
 
@@ -312,8 +321,8 @@ public class ProcessRawData {
 
 	private static List<Integer> sortHouseNumberIndex(String husbandAndFatherLine) {
 
-		int[] validHouseIndex = patternMatchingString(husbandAndFatherLine, "454");
-		int[] inValidHouseIndex = patternMatchingString(husbandAndFatherLine, "545");
+		int[] validHouseIndex = patternMatchingString(husbandAndFatherLine, "XXX");
+		int[] inValidHouseIndex = patternMatchingString(husbandAndFatherLine, "YYY");
 
 		TreeSet<Integer> ts = new TreeSet<Integer>();
 		ts = combineIndexes(ts, validHouseIndex);
@@ -410,9 +419,9 @@ public class ProcessRawData {
 
 	}
 
-	private static Map<String, String> getHouseNumbersMap(String houseNumberLine, List<Integer> indexList) {
+	private static List<String> getHouseNumbersMap(String houseNumberLine, List<Integer> indexList) {
 
-		Map<String, String> houseListMap = new LinkedHashMap<String, String>();
+		List<String> houseList = new ArrayList<String>();
 
 		for (int i = 0; i < 3; i++) {
 			int index = indexList.get(i);
@@ -424,32 +433,20 @@ public class ProcessRawData {
 				houseNumber = houseNumberLine.substring(index + 3).trim();
 			}
 
-			if (validHouse.equals("454")) {
+			if (validHouse.equals("XXX")) {
 
-				houseNumber = houseNumber.replaceAll("[^0-9]", "-");
+				houseNumber = houseNumber.replaceAll("I","/").replaceAll("[^0-9/]", "");
 				// System.out.println(houseNumber);
-
-				if (houseNumber.equals("-")) {
-
-					if (houseListMap.containsKey("No Address"))
-						houseListMap.put("No Address", "VH");
-					else if (houseListMap.containsKey("NoAddress"))
-						houseListMap.put("NoAddress", "VH");
-
-					else
-						houseListMap.put("Not Available", "VH");
-
-				} else
-					houseListMap.put(houseNumber, "VH");
+				houseList.add(houseNumber);
 
 			} else {
-				houseListMap.put(houseNumber, "NVH");
+				houseList.add("NVH");
 
 			}
 
 		}
 
-		return houseListMap;
+		return houseList;
 
 	}
 
@@ -795,6 +792,25 @@ public class ProcessRawData {
 
 		return inValidList;
 
+	}
+	
+	
+	public static List<String> adjustInputLines(List<String> allLines){
+		
+		
+		for(int i=0;i<allLines.size()-1;i+=5) {
+			
+			if( allLines.get(i).trim().matches("Age") || allLines.get(i).trim().matches("Ag")) {
+				System.out.println("Need to merge the lines");
+			}
+		}
+		
+		
+		
+		
+		
+		return allLines;
+		
 	}
 
 }

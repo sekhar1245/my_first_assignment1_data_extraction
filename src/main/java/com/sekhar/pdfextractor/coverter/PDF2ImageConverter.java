@@ -1,4 +1,4 @@
-package com.sekhar.pdfextractor;
+package com.sekhar.pdfextractor.coverter;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -172,12 +172,12 @@ public class PDF2ImageConverter {
 		File f = new File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
 
-		// List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
+		//List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
 
-		String imagePath = OUTPUT_DIR + "image-17.png";
+		String imagePath = OUTPUT_DIR + "image-16.png";
 		StringBuffer sb = obj.extractDataFromImage(imagePath);
 		String rawFile = "RawText.txt";
-		// obj.saveRawData(sb, OUTPUT_DIR + rawFile);
+		obj.saveRawData(sb, OUTPUT_DIR + rawFile);
 
 		ProcessRawData prdata = new ProcessRawData();
 		Set<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
@@ -187,7 +187,7 @@ public class PDF2ImageConverter {
 		
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		String Sheet_Name = "sheet1";
-		FileOutputStream out = new FileOutputStream(new File("NewFile17.xlsx"));
+		FileOutputStream out = new FileOutputStream(new File("sample_data_image09.xlsx"));
 		
 		ExportExcel.generateExcel(workbook, beansSet, 0, out);
 		beansSet.clear();
@@ -203,8 +203,8 @@ public class PDF2ImageConverter {
 			String Sheet_Name = "sheet1";
 			FileOutputStream out = new FileOutputStream(new File("NewFile17.xlsx"));
 		  
-			exportObject.retrieveBeanObjectsAndExportToExcel();
-		  */
+			exportObject.retrieveBeanObjectsAndExportToExcel();*/
+		  
 		 // Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
 		  
 		 // System.out.println(allVoterBeans.size());
