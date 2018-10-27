@@ -35,13 +35,13 @@ public class ProcessRawData {
 			System.out.println("Handling Image " + rawFilePath);
 			System.out.println("before  processing list size " + allLines.size());
 
-			for (int i = 0; i < allLines.size() - 1; i++) {
+			/*for (int i = 0; i < allLines.size() - 1; i++) {
 
 				if (allLines.get(i).trim().equals("")) {
 					allLines.remove(i);
 				}
 
-			}
+			}*/
 
 			System.out.println("allLines.remove(allLines.size() - 2)" + allLines.get(allLines.size() - 2));
 			allLines.remove(allLines.size() - 2);
@@ -70,18 +70,18 @@ public class ProcessRawData {
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
 
-				System.out
-						.println(i + "===============================================================================");
-				System.out.println(voterSet);
-				System.out.println("===============================================================================");
+				//System.out.println(i + "===============================================================================");
+				//System.out.println(voterSet);
+				//System.out.println("===============================================================================");
 
 				voterBeanSet.addAll(voterSet);
-			}
+			} 
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return voterBeanSet;
+		//return voterBeanSet;
+			return voterBeanSet;
 	}
 
 	public static Set<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
@@ -798,12 +798,46 @@ public class ProcessRawData {
 	public static List<String> adjustInputLines(List<String> allLines){
 		
 		
-		for(int i=0;i<allLines.size()-1;i+=5) {
+		
 			
-			if( allLines.get(i).trim().matches("Age") || allLines.get(i).trim().matches("Ag")) {
-				System.out.println("Need to merge the lines");
+			
+
+			for(int i=5;i<allLines.size()-1;i+=5) {
+				
+				String keyword1 = "Age";
+				String keyword2="Ag";
+			
+				Boolean found = Arrays.asList(allLines.get(i).split(" ")).contains(keyword1);
+				if(found){
+				      System.out.println("Keyword matched the string:: Age ");
+				      System.out.println("===============================================================================");
+				      System.out.println("Extra Age Line"+allLines.get(i));
+				      System.out.println("Age Line"+allLines.get(i-1));
+				      System.out.println("House NumberLine"+allLines.get(i-2));
+				      System.out.println("Father//Mother//Husband Line"+allLines.get(i-3));
+				      System.out.println("Name Line"+allLines.get(i-4));
+				      System.out.println("Name Line"+allLines.get(i-5));
+				      System.out.println("===============================================================================");
+				      
+				      
+				}
+				
+				Boolean found1 = Arrays.asList(allLines.get(i).split(" ")).contains(keyword2);
+				if(found1){
+				      System.out.println("Keyword matched the string:: Ag");
+				      System.out.println("===============================================================================");
+				      System.out.println("Extra Age Line"+allLines.get(i));
+				      System.out.println("Age Line"+allLines.get(i-1));
+				      System.out.println("House NumberLine"+allLines.get(i-2));
+				      System.out.println("Father//Mother//Husband Line"+allLines.get(i-3));
+				      System.out.println("Name Line"+allLines.get(i-4));
+				      System.out.println("Name Line"+allLines.get(i-5));
+				      System.out.println("===============================================================================");
+				}
+				
 			}
-		}
+			
+
 		
 		
 		
