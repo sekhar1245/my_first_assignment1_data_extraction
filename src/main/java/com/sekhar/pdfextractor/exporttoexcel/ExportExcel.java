@@ -26,7 +26,7 @@ public class ExportExcel {
 	private static final String rawFile = "RawText.txt";
 	private static final PDF2ImageConverter pdf2imageconverter = new PDF2ImageConverter();
 	private static final File executionFilePath = new File(
-			pdf2imageconverter.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+	pdf2imageconverter.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 	private static final String saveToPath = executionFilePath.getPath() + OUTPUT_DIR;
 	private static final String RAWDATAFile = "RawText.txt";
 	private static final ProcessRawData prdata = new ProcessRawData();

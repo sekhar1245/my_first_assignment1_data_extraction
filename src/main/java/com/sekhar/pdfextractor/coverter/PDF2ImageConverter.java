@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -27,6 +28,7 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
 public class PDF2ImageConverter {
+	
 
 	public List<String> convertPDF2Images(String OUTPUT_DIR) throws IOException {
 
@@ -187,7 +189,7 @@ public class PDF2ImageConverter {
 		
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		String Sheet_Name = "sheet1";
-		FileOutputStream out = new FileOutputStream(new File("sample_data_image09.xlsx"));
+		FileOutputStream out = new FileOutputStream(new File("adjusted_age_lines.xlsx"));
 		
 		ExportExcel.generateExcel(workbook, beansSet, 0, out);
 		beansSet.clear();

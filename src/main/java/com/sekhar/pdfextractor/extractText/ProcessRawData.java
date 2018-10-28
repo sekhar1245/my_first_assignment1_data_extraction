@@ -26,62 +26,66 @@ import com.sekhar.pdfextractor.beans.Voter;
 
 public class ProcessRawData {
 
+	public List<String> allLines = new ArrayList<String>();
+
 	public Set<Voter> removeHeaderAndTrailerFromRawFile(String rawFilePath) {
 
 		Set<Voter> voterBeanSet = new HashSet<Voter>();
 		try {
-			List<String> allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
+			this.allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
 			System.out.println("Handling Image " + rawFilePath);
 			System.out.println("before  processing list size " + allLines.size());
 
-			/*for (int i = 0; i < allLines.size() - 1; i++) {
+			for (int i = 0; i < allLines.size() - 1; i++) {
 
 				if (allLines.get(i).trim().equals("")) {
 					allLines.remove(i);
 				}
 
-			}*/
+			}
 
-			System.out.println("allLines.remove(allLines.size() - 2)" + allLines.get(allLines.size() - 2));
+			// System.out.println("allLines.remove(allLines.size() - 2)" +
+			// allLines.get(allLines.size() - 2));
 			allLines.remove(allLines.size() - 2);
 
-			System.out.println("allLines.remove(1);" + allLines.get(1));
+			// System.out.println("allLines.remove(1);" + allLines.get(1));
 			allLines.remove(1);
 
-			System.out.println("allLines.remove(0);" + allLines.get(0));
+			// System.out.println("allLines.remove(0);" + allLines.get(0));
 			allLines.remove(0);
 
-			System.out.println("final list size " + allLines.size());
+			// System.out.println("final list size " + allLines.size());
 
-			System.out.println("The last line is " + allLines.get(allLines.size() - 1));
-			
-			
-			if((allLines.size()-1)%5!=0) {
-				
-				allLines=adjustInputLines(allLines);
+			// System.out.println("The last line is " + allLines.get(allLines.size() - 1));
+
+			if ((allLines.size() - 1) % 5 != 0) {
+
+				System.out.println(" adjusting the invalid lines...let me try");
+
+				this.adjustInputLines();
 			}
-			
 
-			for (int i = 0; i < allLines.size() - allLines.size() % 5; i += 5) {
+			for (int i = 0; i < allLines.size() - 1; i += 5) {
 
 				System.out.println("Address Input Data is " + allLines.get(i + 3));
 
 				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
 
-				//System.out.println(i + "===============================================================================");
-				//System.out.println(voterSet);
-				//System.out.println("===============================================================================");
+				System.out.println(i + //
+						"===============================================================================");
+				System.out.println(voterSet);
+				System.out.println("===============================================================================");
 
 				voterBeanSet.addAll(voterSet);
-			} 
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//return voterBeanSet;
-			return voterBeanSet;
+		// return voterBeanSet;
+		return voterBeanSet;
 	}
 
 	public static Set<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
@@ -126,16 +130,26 @@ public class ProcessRawData {
 
 		// House Number
 		try {
-			//Map<String, String> houseNumberListMap1 = getHouseNumbersMap(houseNumberLine);
+			// Map<String, String> houseNumberListMap1 =
+			// getHouseNumbersMap(houseNumberLine);
 
-			List<String> List =getHouseNumbersMap(houseNumberLine);
-			
-			firstVoter.setHouseNumber(List.get(0));
-			secondvoter.setHouseNumber(List.get(1));
-			thirdVoter.setHouseNumber(List.get(2));
-			List.clear();
+			List<String> List = getHouseNumbersMap(houseNumberLine);
+
+			if (List.size() == 3) {
+				firstVoter.setHouseNumber(List.get(0));
+				secondvoter.setHouseNumber(List.get(1));
+				thirdVoter.setHouseNumber(List.get(2));
+				List.clear();
+			} else {
+				firstVoter.setHouseNumber(!(NullOREmptyCheck(List.get(0))) ? List.get(0) : null);
+				secondvoter.setHouseNumber(!(NullOREmptyCheck(List.get(1))) ? List.get(1) : null);
+				thirdVoter.setHouseNumber(!(NullOREmptyCheck(List.get(2))) ? List.get(2) : null);
+
+			}
 		} catch (java.lang.IndexOutOfBoundsException e) {
 			System.out.println("getHouseNumbersMap--> Handling Exeption");
+
+			System.out.println(e.toString());
 		}
 
 		// Setting Age
@@ -243,7 +257,7 @@ public class ProcessRawData {
 
 		List<String> namesList = new ArrayList<String>();
 
-		StringTokenizer st = new StringTokenizer(namesLine.trim(), ":");
+		StringTokenizer st = new StringTokenizer(namesLine.trim(), "Name");
 
 		while (st.hasMoreTokens()) {
 			String name = st.nextToken().trim();
@@ -289,8 +303,8 @@ public class ProcessRawData {
 
 		// List<String> houseNumberList = new ArrayList<String>();
 		// System.out.println("getHouseNumbersMap--->" + houseNumberLine.trim());
-		houseNumberLine = houseNumberLine.replaceAll("House Number", "XXX").replaceAll("Ho", "YYY").replaceAll(" :", "")
-				.trim();
+		houseNumberLine = houseNumberLine.replaceAll("House Number", "XXX").replaceAll("Ho", "YYY")
+				.replaceAll("H°", "YYY").replaceAll(" :", "").trim();
 		// System.out.println("Processing--->" + houseNumberLine);
 
 		List<Integer> indexList = sortHouseNumberIndex(houseNumberLine);
@@ -423,11 +437,11 @@ public class ProcessRawData {
 
 		List<String> houseList = new ArrayList<String>();
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < indexList.size(); i++) {
 			int index = indexList.get(i);
 			String validHouse = houseNumberLine.substring(index, index + 3);
 			String houseNumber = null;
-			if (i < 2) {
+			if (i < indexList.size()-1) {
 				houseNumber = houseNumberLine.substring(index + 3, indexList.get(i + 1)).trim();
 			} else {
 				houseNumber = houseNumberLine.substring(index + 3).trim();
@@ -435,13 +449,16 @@ public class ProcessRawData {
 
 			if (validHouse.equals("XXX")) {
 
-				houseNumber = houseNumber.replaceAll("I","/").replaceAll("[^0-9/]", "");
+				houseNumber = houseNumber.replaceAll("I", "/").replaceAll("[^0-9/]", "");
 				// System.out.println(houseNumber);
 				houseList.add(houseNumber);
 
-			} else {
-				houseList.add("NVH");
+			} else if(validHouse.equals("YYY")){
+				houseList.add("Invalid");
 
+			}
+			else {
+				houseList.add("Invalid");
 			}
 
 		}
@@ -502,13 +519,13 @@ public class ProcessRawData {
 		ageGenderLine = ageGenderLine.replaceAll("Available", "").replaceAll("Avallable", "")
 				.replaceAll("[^a-zA-Z0-9]", "").trim();
 
-		ageGenderLine = ageGenderLine.replaceAll("Age", "ZZZ").replaceAll("A9", "age").replaceAll("Ag", "age");
+		ageGenderLine = ageGenderLine.replaceAll("Age", "ZZZ").replaceAll("A9", "###").replaceAll("Ag", "###");
 
 		ageGenderLine = ageGenderLine.replaceAll("FEMALE", "XX").replaceAll("MALE", "YY").replaceAll("I", "").trim();
 		// System.out.println("after processing===>" + ageGenderLine);
 
 		int[] validAgeIndex = patternMatchingString(ageGenderLine, "ZZZ");
-		int[] inValidAgeIndex = patternMatchingString(ageGenderLine, "age");
+		int[] inValidAgeIndex = patternMatchingString(ageGenderLine, "###");
 		TreeSet<Integer> ts = new TreeSet<Integer>();
 
 		ts = combineIndexes(ts, validAgeIndex);
@@ -793,58 +810,184 @@ public class ProcessRawData {
 		return inValidList;
 
 	}
-	
-	
-	public static List<String> adjustInputLines(List<String> allLines){
-		
-		
-		
-			
-			
 
-			for(int i=5;i<allLines.size()-1;i+=5) {
-				
-				String keyword1 = "Age";
-				String keyword2="Ag";
-			
-				Boolean found = Arrays.asList(allLines.get(i).split(" ")).contains(keyword1);
-				if(found){
-				      System.out.println("Keyword matched the string:: Age ");
-				      System.out.println("===============================================================================");
-				      System.out.println("Extra Age Line"+allLines.get(i));
-				      System.out.println("Age Line"+allLines.get(i-1));
-				      System.out.println("House NumberLine"+allLines.get(i-2));
-				      System.out.println("Father//Mother//Husband Line"+allLines.get(i-3));
-				      System.out.println("Name Line"+allLines.get(i-4));
-				      System.out.println("Name Line"+allLines.get(i-5));
-				      System.out.println("===============================================================================");
-				      
-				      
+	public void adjustInputLines() {
+
+		for (int i = 5; i < this.allLines.size() - 1; i += 5) {
+
+			String keyword1 = "Age";
+			String keyword2 = "Ag";
+
+			String ageLine = this.allLines.get(i).replaceAll(":", " ");
+
+			Boolean found = Arrays.asList(ageLine.split(" ")).contains(keyword1);
+			if (found) {
+				System.out.println("Keyword matched the string:: Age ");
+				System.out.println("===============================================================================");
+				System.out.println("Extra Age Line" + this.allLines.get(i));
+				System.out.println("Age Line" + this.allLines.get(i - 1));
+				System.out.println("House NumberLine" + this.allLines.get(i - 2));
+				System.out.println("Father//Mother//Husband Line" + this.allLines.get(i - 3));
+				System.out.println("Name Line" + this.allLines.get(i - 4));
+				System.out.println("Voter ID Line" + this.allLines.get(i - 5));
+				System.out.println("===============================================================================");
+
+				//blockModification(this.allLines.get(i - 5), this.allLines.get(i - 4), this.allLines.get(i - 3),
+						//this.allLines.get(i - 2), this.allLines.get(i - 1), this.allLines.get(i));
+
+				for (int j = 0; j < 6; j++) {
+
+					System.out.println("deleted starting here  Age");
+					this.allLines.remove(i - j);
 				}
-				
-				Boolean found1 = Arrays.asList(allLines.get(i).split(" ")).contains(keyword2);
-				if(found1){
-				      System.out.println("Keyword matched the string:: Ag");
-				      System.out.println("===============================================================================");
-				      System.out.println("Extra Age Line"+allLines.get(i));
-				      System.out.println("Age Line"+allLines.get(i-1));
-				      System.out.println("House NumberLine"+allLines.get(i-2));
-				      System.out.println("Father//Mother//Husband Line"+allLines.get(i-3));
-				      System.out.println("Name Line"+allLines.get(i-4));
-				      System.out.println("Name Line"+allLines.get(i-5));
-				      System.out.println("===============================================================================");
-				}
-				
+
+				i = i - 5;
+
 			}
-			
 
-		
-		
-		
-		
-		
-		return allLines;
-		
+			Boolean found1 = Arrays.asList(ageLine.split(" ")).contains(keyword2);
+			if (found1) {
+				System.out.println("Keyword matched the string:: Ag");
+				System.out.println("===============================================================================");
+				System.out.println("Extra Age Line" + this.allLines.get(i));
+				System.out.println("Age Line" + this.allLines.get(i - 1));
+				System.out.println("House NumberLine" + this.allLines.get(i - 2));
+				System.out.println("Father//Mother//Husband Line" + this.allLines.get(i - 3));
+				System.out.println("Name Line" + this.allLines.get(i - 4));
+				System.out.println("Name Line" + this.allLines.get(i - 5));
+				System.out.println("===============================================================================");
+
+				blockModification(this.allLines.get(i - 5), this.allLines.get(i - 4), this.allLines.get(i - 3),
+						this.allLines.get(i - 2), this.allLines.get(i - 1), this.allLines.get(i));
+
+				for (int j = 0; j < 6; j++) {
+
+					System.out.println("deleted starting here  Ag");
+					this.allLines.remove(i - j);
+				}
+
+				i = i - 5;
+
+			}
+
+		}
+
+	}
+
+	public void blockModification(String voterIdLine, String nameLine, String DependencyLine, String houseLine,
+			String ageGenderLine, String extraAgwLine) {
+		Voter v1 = new Voter();
+		Voter v2 = new Voter();
+		Voter v3 = new Voter();
+
+		String[] arrayDependentName = DependencyLine.split("Husband's Name");
+		List<String> list2 = new ArrayList<String>(Arrays.asList(arrayDependentName));
+		list2.removeAll(Arrays.asList(""));
+		arrayDependentName = list2.toArray(new String[0]);
+		v1.setDependentName(arrayDependentName[0].replace(":", "").trim());
+		v2.setDependentName(arrayDependentName[1].replace(":", "").trim());
+		v3.setDependentName(arrayDependentName[2].replace(":", "").trim());
+
+		String[] arrayHouse = houseLine.split("House");
+		List<String> list3 = new ArrayList<String>(Arrays.asList(arrayHouse));
+		list3.removeAll(Arrays.asList(""));
+		arrayHouse = list3.toArray(new String[0]);
+
+		if (arrayHouse[0].contains("Number")) {
+			v1.setHouseNumber(arrayHouse[0].replace(":", "").replace("Number", "").trim());
+		} else {
+			v1.setDependentName(v1.getDependentName().concat(" " + arrayHouse[0].replace("Photo is", "").trim()));
+		}
+
+		if (arrayHouse[1].contains("Number")) {
+			v2.setHouseNumber(arrayHouse[1].replace(":", "").replace("Number", "").trim());
+		} else {
+			v2.setDependentName(v2.getDependentName().concat(" " + arrayHouse[0].replace("Photo is", "").trim()));
+		}
+
+		if (arrayHouse[2].contains("Number")) {
+			v3.setHouseNumber(arrayHouse[0].replace(":", "").replace("Number", "").trim());
+		} else {
+			v3.setDependentName(v2.getDependentName().concat(" " + arrayHouse[0].replace("Photo is", "").trim()));
+		}
+
+		// Age ,Gender String d
+		String[] arrayAge = ageGenderLine.split("Age");
+		List<String> list4 = new ArrayList<String>(Arrays.asList(arrayAge));
+		list4.removeAll(Arrays.asList(""));
+		arrayAge = list4.toArray(new String[0]);
+		if (arrayAge[0].contains("House")) {
+			v1.setHouseNumber(arrayAge[0].replace("House Number", "").replace(":", "").replace("Photo is", "")
+					.replace("Available", "").trim());
+		} else {
+			String string = arrayAge[0].replaceAll("[\\s]+[0-9{1}][\\s]+", "").replace("Available", "").trim();
+			Pattern p = Pattern.compile("[0-9]{2}");
+			Matcher m = p.matcher(string);
+			if (m.find()) {
+				System.out.println(m.group(0));
+				v1.setAge(m.group(0));
+			}
+			if (string.contains("Gender")) {
+				String gender = string.replace(":", "").replaceAll("[0-9]{2}", "").trim();
+				v1.setGender(gender.substring(gender.indexOf("Gender") + 6, gender.length()).trim());
+				System.out.println(v1.getGender());
+			}
+		}
+
+		if (arrayAge[1].contains("House")) {
+			v2.setHouseNumber(arrayAge[0].replace("House Number", "").replace(":", "").replace("Available", "").trim());
+		} else {
+			String string = arrayAge[1].replaceAll("[\\s]+[0-9{1}][\\s]+", "").replace("Available", "").trim();
+			Pattern p = Pattern.compile("[0-9]{2}");
+			Matcher m = p.matcher(string);
+			if (m.find()) {
+				System.out.println(m.group(0));
+				v2.setAge(m.group(0));
+			}
+			if (string.contains("Gender")) {
+				String gender = string.replace(":", "").replaceAll("[0-9]{2}", "").trim();
+				v2.setGender(gender.substring(gender.indexOf("Gender") + 6, gender.length()).trim());
+				System.out.println(v2.getGender());
+			}
+		}
+
+		if (arrayAge[2].contains("House")) {
+			v3.setHouseNumber(arrayAge[0].replace("House Number", "").replace(":", "").replace("Available", "").trim());
+		} else {
+			String string = arrayAge[2].replaceAll("[\\s]+[0-9{1}][\\s]+", "").replace("Available", "").trim();
+			Pattern p = Pattern.compile("[0-9]{2}");
+			Matcher m = p.matcher(string);
+			if (m.find()) {
+				System.out.println(m.group(0));
+				v3.setAge(m.group(0));
+			}
+			if (string.contains("Gender")) {
+				String gender = string.replace(":", "").replaceAll("[0-9]{2}", "").trim();
+				v3.setGender(gender.substring(gender.indexOf("Gender") + 6, gender.length()).trim());
+				System.out.println(v3.getGender());
+			}
+		}
+
+		// String e
+		Pattern p = Pattern.compile("[0-9]{2}");
+		Matcher m = p.matcher(extraAgwLine);
+		if (m.find()) {
+			System.out.println(m.group(0));
+			v1.setAge(m.group(0));
+		}
+		v1.setGender(extraAgwLine.substring(extraAgwLine.indexOf("Gender") + 6, extraAgwLine.length()).replace(":", "")
+				.trim());
+
+		List<Voter> finalList = new ArrayList<Voter>();
+
+		finalList.add(v1);
+		finalList.add(v2);
+		finalList.add(v3);
+
+		System.out.println("=================888888888=================================================");
+		System.out.println(finalList);
+		System.out.println("=================888888888=================================================");
+
 	}
 
 }
