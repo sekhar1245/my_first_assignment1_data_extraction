@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -28,7 +27,6 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
 public class PDF2ImageConverter {
-	
 
 	public List<String> convertPDF2Images(String OUTPUT_DIR) throws IOException {
 
@@ -77,10 +75,12 @@ public class PDF2ImageConverter {
 				BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
 				String fileName = OUTPUT_DIR + "image-" + page + ".png";
 				ImageIOUtil.writeImage(bim, fileName, 300);
-
+				imageNamesList.add(fileName);
+				System.out.println("Image converation completed...! "+fileName);
+			
 			}
 
-			System.out.println("Image converation completed...!");
+			
 
 		} catch (IOException e) {
 			System.err.println("Exception while trying to create pdf document - " + e);
@@ -94,6 +94,7 @@ public class PDF2ImageConverter {
 
 	public StringBuffer extractDataFromImage(String imagePath) {
 
+		System.out.println("started ::: extractDataFromImage");
 		File imageFile = new File(imagePath);
 		ITesseract instance = new Tesseract();
 
@@ -112,6 +113,7 @@ public class PDF2ImageConverter {
 
 		}
 
+		System.out.println("completed ::: extractDataFromImage");
 		return result;
 
 	}
@@ -120,11 +122,15 @@ public class PDF2ImageConverter {
 
 		try {
 
+			System.out.println("started ::: saveRawData");
+
 			// String rawFileName="RawText.txt";
 			@SuppressWarnings("resource")
 			BufferedWriter bwr = new BufferedWriter(new FileWriter(new File(saveRawFile)));
 			bwr.write(rawText.toString());
 			bwr.flush();
+
+			System.out.println("completed ::: saveRawData");
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -170,48 +176,48 @@ public class PDF2ImageConverter {
 
 	public static void main(String arg[]) throws Exception {
 
-		PDF2ImageConverter obj = new PDF2ImageConverter();
-		File f = new File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
+		/*
+		 * PDF2ImageConverter obj = new PDF2ImageConverter(); File f = new
+		 * File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().
+		 * getPath()); String OUTPUT_DIR = f.getPath() + "\\OCR\\";
+		 * 
+		 * List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
+		 * 
+		 * String imagePath = OUTPUT_DIR + "image-16.png"; StringBuffer sb =
+		 * obj.extractDataFromImage(imagePath); String rawFile = "RawText.txt";
+		 * obj.saveRawData(sb, OUTPUT_DIR + rawFile);
+		 * 
+		 * ProcessRawData prdata = new ProcessRawData(); List<Voter> beansSet =
+		 * prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
+		 * //beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR +
+		 * rawFile));
+		 * 
+		 * System.out.println("Size of the beans" + beansSet.size());
+		 * 
+		 * XSSFWorkbook workbook = new XSSFWorkbook(); String Sheet_Name = "sheet1";
+		 * FileOutputStream out = new FileOutputStream(new
+		 * File("adjusted_age_lines.xlsx"));
+		 * 
+		 * ExportExcel.generateExcel(workbook, beansSet, 0, out); beansSet.clear();
+		 * out.close();
+		 */
 
-		List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
+		// need to uncheck the below 2 lines
 
-		String imagePath = OUTPUT_DIR + "image-16.png";
-		StringBuffer sb = obj.extractDataFromImage(imagePath);
-		String rawFile = "RawText.txt";
-		obj.saveRawData(sb, OUTPUT_DIR + rawFile);
+		ExportExcel exportObject = new ExportExcel();
 
-		ProcessRawData prdata = new ProcessRawData();
-		List<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
-		//beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile));
+		exportObject.retrieveBeanObjectsAndExportToExcel();
 
-		System.out.println("Size of the beans" + beansSet.size());
-		
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		String Sheet_Name = "sheet1";
-		FileOutputStream out = new FileOutputStream(new File("adjusted_age_lines.xlsx"));
-		
-		ExportExcel.generateExcel(workbook, beansSet, 0, out);
-		beansSet.clear();
-		out.close();
-		
+		// XSSFWorkbook workbook = new XSSFWorkbook();
+		// String Sheet_Name = "sheet1";
+		// out = new FileOutputStream(new File("Mancherial_PB_125.xlsx"));
 
-		// need to uncheck the below 3 lines
+		// exportObject.retrieveBeanObjectsAndExportToExcel();
 
-		
-		 /* ExportExcel exportObject = new ExportExcel();
-		  
-		  XSSFWorkbook workbook = new XSSFWorkbook();
-			String Sheet_Name = "sheet1";
-			FileOutputStream out = new FileOutputStream(new File("NewFile17.xlsx"));
-		  
-			exportObject.retrieveBeanObjectsAndExportToExcel();*/
-		  
-		 // Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
-		  
-		 // System.out.println(allVoterBeans.size());
-		  
-		 
+		// Set<Voter> allVoterBeans = exportObject.retrieveBeanObjects();
+
+		// System.out.println(allVoterBeans.size());
+
 		/*
 		 * PDF2ImageConverter obj = new PDF2ImageConverter();
 		 * 

@@ -35,15 +35,16 @@ public class ProcessRawData {
 			this.allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
 			System.out.println("Handling Image " + rawFilePath);
-			System.out.println("before  processing list size " + allLines.size());
+			System.out.println("before  processing list size " + this.allLines.size());
 
-			for (int i = 0; i < allLines.size() - 1; i++) {
+			for (int i = 0; i < this.allLines.size() - 1; i++) {
 
-				if (allLines.get(i).trim().equals("")) {
-					allLines.remove(i);
+				if (this.allLines.get(i).trim().equals("")) {
+					this.allLines.remove(i);
 				}
 
 			}
+			System.out.println("after removing empty lines from file " + this.allLines.size());
 
 			// System.out.println("allLines.remove(allLines.size() - 2)" +
 			// allLines.get(allLines.size() - 2));

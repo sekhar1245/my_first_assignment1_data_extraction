@@ -60,22 +60,28 @@ public class ExportExcel {
 	}
 	
 	
-	
+	//Passing pdf file name which is in class path
 	public void retrieveBeanObjectsAndExportToExcel() throws IOException {
 
-		FileOutputStream out = new FileOutputStream(new File("Sample_Excel.xlsx"));
+		FileOutputStream out = new FileOutputStream(new File("Mancherial_PB_125.xlsx"));
 
 		Set<Voter> beansSet = new HashSet<Voter>();
 
-		List<String> imageNamesList = pdf2imageconverter.convertPDF2Images(saveToPath);
+		List<String> imageNamesList = pdf2imageconverter.convertPDF2Images(saveToPath,"Mancherial_PB_125.pdf");
+		List<Voter> beanData = null;
+		
 
 		StringBuffer buffer = null;
 		for (int i = 2; i < imageNamesList.size() - 1; i++) {
 			buffer = pdf2imageconverter.extractDataFromImage(imageNamesList.get(i).trim());
 			pdf2imageconverter.saveRawData(buffer, saveToPath + RAWDATAFile);
 
-			List<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
-			//System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
+			try{
+			beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
+			}catch(Exception e) {
+				System.out.println("Handling exception at  retrieveBeanObjectsAndExportToExcel "+ imageNamesList.get(i));
+			}
+			System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
 			
 			PrintWriter writer = new PrintWriter(saveToPath + RAWDATAFile);
 			writer.close();
@@ -176,7 +182,7 @@ public class ExportExcel {
 		cell.setCellValue("Relationship Type ");
 
 		cell = row.createCell(3);
-		cell.setCellValue("Husband//Father//Mother Name");
+		cell.setCellValue("Husband/Father/Mother Name");
 		
 
 		cell = row.createCell(4);
