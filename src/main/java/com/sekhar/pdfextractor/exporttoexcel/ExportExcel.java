@@ -46,7 +46,7 @@ public class ExportExcel {
 			buffer = pdf2imageconverter.extractDataFromImage(imageNamesList.get(i).trim());
 			pdf2imageconverter.saveRawData(buffer, saveToPath + RAWDATAFile);
 
-			Set<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
+			List<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
 			//System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
 			generateExcel(workbook, beanData, beansSet.size(), out);
 			PrintWriter writer = new PrintWriter(saveToPath + RAWDATAFile);
@@ -74,7 +74,7 @@ public class ExportExcel {
 			buffer = pdf2imageconverter.extractDataFromImage(imageNamesList.get(i).trim());
 			pdf2imageconverter.saveRawData(buffer, saveToPath + RAWDATAFile);
 
-			Set<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
+			List<Voter> beanData = prdata.removeHeaderAndTrailerFromRawFile(saveToPath + RAWDATAFile);
 			//System.out.println("Retrived Data from " + imageNamesList.get(i).trim() + "Size is " + beanData.size());
 			
 			PrintWriter writer = new PrintWriter(saveToPath + RAWDATAFile);
@@ -90,7 +90,7 @@ public class ExportExcel {
 	}
 	
 
-	public static void generateExcel(XSSFWorkbook workbook, Set<Voter> beanData, int voterCount, FileOutputStream out) {
+	public static void generateExcel(XSSFWorkbook workbook, List<Voter> beanData, int voterCount, FileOutputStream out) {
 		try {
 
 			XSSFSheet sheet = null;

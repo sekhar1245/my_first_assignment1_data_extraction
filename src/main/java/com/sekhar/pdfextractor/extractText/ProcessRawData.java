@@ -28,9 +28,9 @@ public class ProcessRawData {
 
 	public List<String> allLines = new ArrayList<String>();
 
-	public Set<Voter> removeHeaderAndTrailerFromRawFile(String rawFilePath) {
+	public List<Voter> removeHeaderAndTrailerFromRawFile(String rawFilePath) {
 
-		Set<Voter> voterBeanSet = new HashSet<Voter>();
+		List<Voter> voterBeanSet = new ArrayList<Voter>();
 		try {
 			this.allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
@@ -70,7 +70,7 @@ public class ProcessRawData {
 
 				System.out.println("Address Input Data is " + allLines.get(i + 3));
 
-				Set<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
+				List<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
 						allLines.get(i + 3), allLines.get(i + 4));
 
 				System.out.println(i + //
@@ -88,41 +88,43 @@ public class ProcessRawData {
 		return voterBeanSet;
 	}
 
-	public static Set<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
+	public static List<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
 			String houseNumberLine, String ageAndGenderLine) {
-
-		Set<Voter> VoterSet = new HashSet<Voter>();
 
 		Voter firstVoter = new Voter();
 		Voter secondvoter = new Voter();
 		Voter thirdVoter = new Voter();
 
+		Map<Integer, Voter> voterersMap = new LinkedHashMap<Integer, Voter>();
+
+		voterersMap.put(0, firstVoter);
+		voterersMap.put(1, secondvoter);
+		voterersMap.put(2, thirdVoter);
+
 		// Setting VoterIDs
 		List<String> voterList = getVoterIDList(voterIDLine);
-		if (voterList.size() == 3) {
-			firstVoter.setVoterID(voterList.get(0));
-			secondvoter.setVoterID(voterList.get(1));
-			thirdVoter.setVoterID(voterList.get(2));
-		} else {
+		for (int i = 0; i < voterList.size(); i++) {
 
-			firstVoter.setVoterID(!(NullOREmptyCheck(voterList.get(0))) ? voterList.get(0) : null);
-			secondvoter.setVoterID(!(NullOREmptyCheck(voterList.get(1))) ? voterList.get(1) : null);
-			thirdVoter.setVoterID(!(NullOREmptyCheck(voterList.get(2))) ? voterList.get(2) : null);
+			Voter v = voterersMap.get(i);
+			v.setVoterID(voterList.get(i));
+			voterersMap.put(i, v);
 
 		}
 
 		// Setting Names
 
 		try {
-			Map<String, String> namesListMap = getNamesListMap(nameLine);
-			List<String> List = new ArrayList<String>(namesListMap.keySet());
-			// System.out.println(nameLine);
-			// System.out.println(namesListMap);
+			List<String> List = getNamesListMap(nameLine);
+			;
 
-			// System.out.println(List);
-			firstVoter.setUserName(List.get(0));
-			secondvoter.setUserName(List.get(1));
-			thirdVoter.setUserName(List.get(2));
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setUserName(List.get(i));
+				voterersMap.put(i, v);
+
+			}
+
 			List.clear();
 		} catch (java.lang.IndexOutOfBoundsException e) {
 			System.out.println("getNamesListMap--->Handling Exeption");
@@ -135,17 +137,16 @@ public class ProcessRawData {
 
 			List<String> List = getHouseNumbersMap(houseNumberLine);
 
-			if (List.size() == 3) {
-				firstVoter.setHouseNumber(List.get(0));
-				secondvoter.setHouseNumber(List.get(1));
-				thirdVoter.setHouseNumber(List.get(2));
-				List.clear();
-			} else {
-				firstVoter.setHouseNumber(!(NullOREmptyCheck(List.get(0))) ? List.get(0) : null);
-				secondvoter.setHouseNumber(!(NullOREmptyCheck(List.get(1))) ? List.get(1) : null);
-				thirdVoter.setHouseNumber(!(NullOREmptyCheck(List.get(2))) ? List.get(2) : null);
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setHouseNumber(List.get(i));
+				voterersMap.put(i, v);
 
 			}
+
+			List.clear();
+
 		} catch (java.lang.IndexOutOfBoundsException e) {
 			System.out.println("getHouseNumbersMap--> Handling Exeption");
 
@@ -157,16 +158,29 @@ public class ProcessRawData {
 			List<String> List = new java.util.LinkedList<>();
 			Map<Integer, List> ageGenderMap = getAgeGenderMap(ageAndGenderLine);
 			List.addAll(ageGenderMap.get(0));
-			firstVoter.setAge(List.get(0));
-			secondvoter.setAge(List.get(1));
-			thirdVoter.setAge(List.get(2));
+			// firstVoter.setAge(List.get(0));
+			// secondvoter.setAge(List.get(1));
+			// thirdVoter.setAge(List.get(2));
+
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setAge(List.get(i));
+				voterersMap.put(i, v);
+
+			}
+
 			List.clear();
+			List.addAll(ageGenderMap.get(1));
 
 			// Setting Gender
-			List.addAll(ageGenderMap.get(1));
-			firstVoter.setGender(List.get(0));
-			secondvoter.setGender(List.get(1));
-			thirdVoter.setGender(List.get(2));
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setGender(List.get(i));
+				voterersMap.put(i, v);
+
+			}
 			List.clear();
 
 		} catch (java.lang.IndexOutOfBoundsException e) {
@@ -178,26 +192,44 @@ public class ProcessRawData {
 			List<String> List = new java.util.LinkedList<>();
 			// setting dependent Names
 			List.addAll(husbandAndFatherRelationshipMap.keySet());
-			firstVoter.setDependentName(List.get(0));
-			secondvoter.setDependentName(List.get(1));
-			thirdVoter.setDependentName(List.get(2));
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setDependentName(List.get(i));
+				voterersMap.put(i, v);
+
+			}
+
 			List.clear();
 
 			// setting dependent type relationships
 			List.addAll(husbandAndFatherRelationshipMap.values());
-			firstVoter.setDependentType(List.get(0));
-			secondvoter.setDependentType(List.get(1));
-			thirdVoter.setDependentType(List.get(2));
+			for (int i = 0; i < List.size(); i++) {
+
+				Voter v = voterersMap.get(i);
+				v.setDependentType(List.get(i));
+				voterersMap.put(i, v);
+
+			}
 			List.clear();
 
 		} catch (java.lang.IndexOutOfBoundsException e) {
 			System.out.println("getAgeGenderMap--->Handling Exeption");
 		}
 
-		VoterSet.add(firstVoter);
-		VoterSet.add(secondvoter);
-		VoterSet.add(thirdVoter);
-		return VoterSet;
+		List<Voter> list = new ArrayList<Voter>();
+		
+		
+		for (int i = 0; i < voterersMap.size(); i++) {
+
+			if( !(voterersMap.get(i).getAge().equalsIgnoreCase("Invalid")) && !(voterersMap.get(i).getGender().equalsIgnoreCase("Invalid"))) {
+				list.add(voterersMap.get(i));
+			}
+			
+		}
+		
+		
+		return list;
 
 	}
 
@@ -242,38 +274,56 @@ public class ProcessRawData {
 
 	}
 
-	public static Map<String, String> getNamesListMap(String namesLine) {
+	public static List<String> getNamesListMap(String namesLine) {
 
-		Map<String, String> namesListMap = new LinkedHashMap<String, String>();
+		// Map<String, String> namesListMap = new LinkedHashMap<String, String>();
+		namesLine = namesLine.replaceAll(":", "").replaceAll("Photo is", "").trim();
+		List<Integer> indexList = getNamesIndex(namesLine);
+		;
+		List<String> nameList = null;
 
-		// System.out.println("String getNamesListMap --->" + namesLine.trim());
-
-		Pattern p = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
-		Matcher m = p.matcher(namesLine);
-		boolean b = m.find();
-		// System.out.println("there is one delted Voter Name" + b);
-
-		namesLine = namesLine.replaceAll("Name", "").replaceAll("Photo is", "").trim();
-
-		List<String> namesList = new ArrayList<String>();
-
-		StringTokenizer st = new StringTokenizer(namesLine.trim(), "Name");
-
-		while (st.hasMoreTokens()) {
-			String name = st.nextToken().trim();
-			// namesList.add(name);
-			if (name.contains("\\") || name.contains(".") || name.contains("\\")) {
-				// System.out.println("NotValid entry voter" + name);
-				namesListMap.put(name, "NotValid");
-			} else {
-				namesListMap.put(name, "Valid");
+		if (indexList.size() == 3) {
+			nameList = getNamesAsList(namesLine, indexList);
+		} else {
+			nameList = getNamesAsList(namesLine, indexList);
+			while (nameList.size() == 3) {
+				nameList.add("Invalid");
 			}
 
 		}
 
-		// System.out.println("Exited the getNamesListMap"+namesListMap);
+		return nameList;
 
-		return namesListMap;
+	}
+
+	public static List<String> getNamesAsList(String namesList, List<Integer> indexList) {
+
+		String name = null;
+		List<String> nameList = new ArrayList<String>();
+
+		for (int i = 0; i < indexList.size(); i++) {
+			int index = indexList.get(i);
+
+			if (i < indexList.size() - 1) {
+				name = namesList.substring(index + 4, indexList.get(i + 1)).trim();
+			} else {
+				name = namesList.substring(index + 4).trim();
+			}
+
+			nameList.add(name);
+
+		}
+
+		if (nameList.size() == 3) {
+			return nameList;
+		} else {
+			while (nameList.size() == 3) {
+				nameList.add("Invalid");
+			}
+
+			return nameList;
+
+		}
 
 	}
 
@@ -353,6 +403,16 @@ public class ProcessRawData {
 		indexList.remove(notrequired);
 		Collections.sort(indexList);
 		return indexList;
+
+	}
+
+	private static List<Integer> getNamesIndex(String namesLine) {
+
+		int[] nameStartIndex = patternMatchingString(namesLine, "Name");
+
+		TreeSet<Integer> ts = new TreeSet<Integer>();
+		ts = combineIndexes(ts, nameStartIndex);
+		return removeUnwantedEntriesFromList(ts);
 
 	}
 
@@ -441,7 +501,7 @@ public class ProcessRawData {
 			int index = indexList.get(i);
 			String validHouse = houseNumberLine.substring(index, index + 3);
 			String houseNumber = null;
-			if (i < indexList.size()-1) {
+			if (i < indexList.size() - 1) {
 				houseNumber = houseNumberLine.substring(index + 3, indexList.get(i + 1)).trim();
 			} else {
 				houseNumber = houseNumberLine.substring(index + 3).trim();
@@ -449,15 +509,14 @@ public class ProcessRawData {
 
 			if (validHouse.equals("XXX")) {
 
-				houseNumber = houseNumber.replaceAll("I", "/").replaceAll("[^0-9/]", "");
+				houseNumber=houseNumber.replaceAll("Photo is not", "").replaceAll("Photo is","").trim();
 				// System.out.println(houseNumber);
 				houseList.add(houseNumber);
 
-			} else if(validHouse.equals("YYY")){
+			} else if (validHouse.equals("YYY")) {
 				houseList.add("Invalid");
 
-			}
-			else {
+			} else {
 				houseList.add("Invalid");
 			}
 
@@ -472,11 +531,11 @@ public class ProcessRawData {
 
 		Map<String, String> HFListMap = new LinkedHashMap<String, String>();
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < indexList.size(); i++) {
 			int index = indexList.get(i);
 			String HorF = husbandAndFatherLine.substring(index, index + 3);
 			String HorFName = null;
-			if (i < 2) {
+			if (i < indexList.size()-1) {
 				HorFName = husbandAndFatherLine.substring(index + 4, indexList.get(i + 1));
 			} else {
 				HorFName = husbandAndFatherLine.substring(index + 4);
@@ -832,8 +891,9 @@ public class ProcessRawData {
 				System.out.println("Voter ID Line" + this.allLines.get(i - 5));
 				System.out.println("===============================================================================");
 
-				//blockModification(this.allLines.get(i - 5), this.allLines.get(i - 4), this.allLines.get(i - 3),
-						//this.allLines.get(i - 2), this.allLines.get(i - 1), this.allLines.get(i));
+				// blockModification(this.allLines.get(i - 5), this.allLines.get(i - 4),
+				// this.allLines.get(i - 3),
+				// this.allLines.get(i - 2), this.allLines.get(i - 1), this.allLines.get(i));
 
 				for (int j = 0; j < 6; j++) {
 

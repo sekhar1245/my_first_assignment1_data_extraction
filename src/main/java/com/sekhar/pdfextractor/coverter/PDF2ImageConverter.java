@@ -174,7 +174,7 @@ public class PDF2ImageConverter {
 		File f = new File(obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		String OUTPUT_DIR = f.getPath() + "\\OCR\\";
 
-		//List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
+		List<String> imageNames = obj.convertPDF2Images(OUTPUT_DIR);
 
 		String imagePath = OUTPUT_DIR + "image-16.png";
 		StringBuffer sb = obj.extractDataFromImage(imagePath);
@@ -182,7 +182,7 @@ public class PDF2ImageConverter {
 		obj.saveRawData(sb, OUTPUT_DIR + rawFile);
 
 		ProcessRawData prdata = new ProcessRawData();
-		Set<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
+		List<Voter> beansSet = prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile);
 		//beansSet.addAll(prdata.removeHeaderAndTrailerFromRawFile(OUTPUT_DIR + rawFile));
 
 		System.out.println("Size of the beans" + beansSet.size());
