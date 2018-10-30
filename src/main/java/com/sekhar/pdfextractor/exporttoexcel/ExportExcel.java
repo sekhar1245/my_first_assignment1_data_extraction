@@ -194,7 +194,8 @@ public class ExportExcel {
 		cell = row.createCell(6);
 		cell.setCellValue("House No");
 
-	
+		cell = row.createCell(7);
+		cell.setCellValue("Page No");
 	
 	
 	
@@ -224,6 +225,9 @@ public class ExportExcel {
 
 		cell = row.createCell(6);
 		cell.setCellValue(voter.getHouseNumber());
+		
+		cell = row.createCell(7);
+		cell.setCellValue(voter.getPageNumber());
 
 
 	}

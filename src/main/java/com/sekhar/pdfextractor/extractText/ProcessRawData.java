@@ -31,6 +31,7 @@ public class ProcessRawData {
 	public List<Voter> removeHeaderAndTrailerFromRawFile(String rawFilePath) {
 
 		List<Voter> voterBeanSet = new ArrayList<Voter>();
+		String pageNumber=null;
 		try {
 			this.allLines = Files.readAllLines(Paths.get(rawFilePath), StandardCharsets.ISO_8859_1);
 
@@ -48,6 +49,10 @@ public class ProcessRawData {
 
 			// System.out.println("allLines.remove(allLines.size() - 2)" +
 			// allLines.get(allLines.size() - 2));
+			
+			pageNumber = allLines.get(allLines.size() - 2);
+			pageNumber = pageNumber.substring(pageNumber.lastIndexOf("Page"));
+			
 			allLines.remove(allLines.size() - 2);
 
 			// System.out.println("allLines.remove(1);" + allLines.get(1));
@@ -72,7 +77,7 @@ public class ProcessRawData {
 				System.out.println("Address Input Data is " + allLines.get(i + 3));
 
 				List<Voter> voterSet = cleanseRawData(allLines.get(i), allLines.get(i + 1), allLines.get(i + 2),
-						allLines.get(i + 3), allLines.get(i + 4));
+						allLines.get(i + 3), allLines.get(i + 4),pageNumber);
 
 				System.out.println(i + //
 						"===============================================================================");
@@ -90,11 +95,15 @@ public class ProcessRawData {
 	}
 
 	public static List<Voter> cleanseRawData(String voterIDLine, String nameLine, String husbandAndFatherLine,
-			String houseNumberLine, String ageAndGenderLine) {
+			String houseNumberLine, String ageAndGenderLine,String pageNumber) {
 
 		Voter firstVoter = new Voter();
 		Voter secondvoter = new Voter();
 		Voter thirdVoter = new Voter();
+		
+		firstVoter.setPageNumber(pageNumber);
+		secondvoter.setPageNumber(pageNumber);
+		thirdVoter.setPageNumber(pageNumber);
 
 		Map<Integer, Voter> voterersMap = new LinkedHashMap<Integer, Voter>();
 

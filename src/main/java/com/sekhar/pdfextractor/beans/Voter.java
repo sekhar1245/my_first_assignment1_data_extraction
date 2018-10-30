@@ -12,7 +12,16 @@ public class Voter {
 	String houseNumber;
 	String gender;
 	boolean validCard;
+	String pageNumber;
+	
+	
 
+	public String getPageNumber() {
+		return pageNumber;
+	}
+	public void setPageNumber(String pageNumber) {
+		this.pageNumber = pageNumber;
+	}
 	public boolean isValidCard() {
 		return validCard;
 	}
